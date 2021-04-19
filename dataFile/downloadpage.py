@@ -107,27 +107,33 @@ def special(name):
     content = f.read()
     eight_digit = re.compile(r'(\d{4}\.\d{2}\.\d{2})\s{2,3}', flags=re.M)
     eight_digit_list = eight_digit.findall(content)
+    special_ten_digit = re.compile(r'(\d{4}\.\d{2}\.\d{4})', flags=re.M)
+    special_ten_digit_list = special_ten_digit.findall(content)
     array = []
     for i in range(len(eight_digit_list)):
         array.append(eight_digit_list[i])
+    for j in range(len(special_ten_digit_list)):
+        if special_ten_digit_list[j][0:4] == '9999':
+            array.append(special_ten_digit_list[j])
     array = list(dict.fromkeys(array))
     result = []
 
-    if len(name) == 6:
-        newcode = name[-2:]
-    else:
-        code = name[-3:]
-        newcode = code[0:2] + '0' + code[-1]
+    # if len(name) == 6:
+    #     newcode = name[-2:]
+    # else:
+    #     code = name[-3:]
+    #     newcode = code[0:2] + '0' + code[-1]
     for j in range(len(array)):
         temp = array[j].replace("\n", "")
         temp = temp.replace(" ", "")
         temp = temp.replace(".", "")
-        if temp[0:4] == newcode and len(name) != 6:
-            result.append(temp)
-        if temp[0:2] == newcode and len(name) == 6:
-            result.append(temp)
-        if len(temp) > 10:
-            print(temp)
+        result.append(temp)
+        # if temp[0:4] == newcode and len(name) != 6:
+        #     result.append(temp)
+        # if temp[0:2] == newcode and len(name) == 6:
+        #     result.append(temp)
+        # if len(temp) > 10:
+        #     print(temp)
 
     file1.write(str(result))
     file1.close()
@@ -137,7 +143,7 @@ def special(name):
 year = '94'
 # todo: change according to the years
 url = 'https://www.usitc.gov/tata/hts/archive/' + year+ '00/19' + year +'_basic_index.htm'
-
+# url = 'https://www.usitc.gov/tata/hts/archive/0000/2000_basic_index.htm'
 response = urllib.request.urlopen(url)
 webContent = str(response.read())
 # todo: change according to the years
@@ -162,6 +168,10 @@ for i in range(len(fileNames)):
 # if __name__ == '__main__':
 #     main('940c38')
 
+# 1994-1999 link
+# url = 'https://www.usitc.gov/tata/hts/archive/' + year+ '00/19' + year +'_basic_index.htm'
+# pdfLink = re.compile(r'(\/tata\/hts\/archive\/' + year + '00\/'+ year + '0c\d{2,3}\.pdf)', flags=re.M)
+# pdfshort = re.compile(r'\/(' + year + '0c\d{2,3})\.pdf', flags=re.M)
 # 2000 link
 # url = 'https://www.usitc.gov/tata/hts/archive/0000/2000_basic_index.htm'
 # pdfLink = re.compile(r'(\/tata\/hts\/archive\/' + year + '00\/'+ year + '0c\d{2,3}\.pdf)', flags=re.M)
