@@ -1,4 +1,5 @@
 import csv
+import math
 
 import pandas as pd
 import urllib.request, urllib.parse
@@ -42,7 +43,6 @@ def AntiDumping(DOC, product):
         if productLink in i:
             longlink = urllib.request.urlopen(i)
             longwebContent = str(longlink.read())
-            print(longwebContent)
             titlePattern = re.compile(
                 r'<div id="metadata_content_area" class="metadata-content-area">\\n.+<h1>(.+?)<\/h1>',
                 flags=re.M)
@@ -53,25 +53,97 @@ def AntiDumping(DOC, product):
                 continue;
             if 'Notice' in title:
                 continue;
-            print(title)
             if 'Initiation of Antidumping Duty' in title:
+                print(title)
                 initiation.append(i)
+                initiation_source = i
+                initiation_action = 'initiation'
+                dateFormat = re.compile(r'Publication Date.+documents/(\d{4}/\d{2}/\d{2})',flags=re.M)
+                dateString = dateFormat.findall(longwebContent)[0]
+                initiation_year = dateString[:4]
+                initiation_month = dateString[5:7]
+                initiation_date = dateString[-2:]
+                FedRegFormat = re.compile(r'document-citation.+(\d{2}\s[A-Z]{2}\s\d{4,5})\\n',flags=re.M)
+                initiation_FedReg = FedRegFormat.findall(longwebContent)[0]
+                initiation_petitioners = []
+                petitionerFormat = re.compile(r'by\s(.+)\s\(“the petitioner”\)',flags=re.M)
+                initiation_petitioners.append(petitionerFormat.findall(longwebContent)[0])
             if 'Antidumping Duty Orders' in title:
+                print(title)
                 activation.append(i)
-                # html = requests.get(url).content
-                # df_list = pd.read_html(html)
-                # df = df_list[-1]
-                # print(df)
+                activation_source = i
+                activation_action = 'activation'
+                dateFormat = re.compile(r'Publication Date.+documents/(\d{4}/\d{2}/\d{2})',
+                                        flags=re.M)
+                dateString = dateFormat.findall(longwebContent)[0]
+                activation_year = dateString[:4]
+                activation_month = dateString[5:7]
+                activation_date = dateString[-2:]
+                FedRegFormat = re.compile(r'document-citation.+(\d{2}\s[A-Z]{2}\s\d{4,5})\\n',
+                                          flags=re.M)
+                activation_FedReg = FedRegFormat.findall(longwebContent)[0]
+                html = requests.get(i).content
+                df_list = pd.read_html(html)
+                df = pd.DataFrame(df_list[-1])
+                # fill country name
+                last = ''
+                countries = []
+                for i in range(len(df['Country'])):
+                    curr = df['Country'][i]
+                    if isinstance(curr, str):
+                        last = curr
+                        countries.append(curr)
+                    else:
+                        countries.append(last)
+                df['Country'] = countries
+                df['Year'] = [activation_year]*len(df)
+                df['Month'] = [activation_month]*len(df)
+                df['Date'] = [activation_date]*len(df)
+                df['FedReg'] = [activation_FedReg]*len(df)
+                df['AD/CVD'] = ['AD']*len(df)
+                df['Action'] = [activation_action]*len(df)
+
+                HScodeFormate = re.compile(r'(\d{4}\.\d{2}\.\d{4})', flags=re.M)
+                activation_HScodeList = list(HScodeFormate.findall(longwebContent))
+                if len(activation_HScodeList) == 5:
+                    for i in range(0, len(activation_HScodeList)):
+                        df['HS' + str(i+1)] = [activation_HScodeList[i]]*len(df)
+                if len(activation_HScodeList) == 6:
+                    df['HS' + '3'] = ''
+                    for i in range(0, len(activation_HScodeList)):
+                        if i < 3:
+                            df['HS' + str(i+1)] = [activation_HScodeList[i]]*len(df)
+                        if i >= 3:
+                            df['HS' + str(i+2)] = [activation_HScodeList[i]]*len(df)
+                if len(activation_HScodeList) < 5 or len(activation_HScodeList) > 6:
+                    print('irregular HScode')
+                    for i in range(0, len(activation_HScodeList)):
+                        df['HS' + str(i+1)] = [activation_HScodeList[i]]*len(df)
+                df['source'] = [activation_source]*len(df)
+                print(df)
+                df.to_csv(product + '.csv')
+
             if 'Revocation of Antidumping' in title:
+                print(title)
                 revocation.append(i)
+                revocation_source = i
+                revocation_action = 'revocation'
+                dateFormat = re.compile(r'Publication Date.+documents/(\d{4}/\d{2}/\d{2})', flags=re.M)
+                dateString = dateFormat.findall(longwebContent)[0]
+                revocation_year = dateString[:4]
+                revocation_month = dateString[5:7]
+                revocation_date = dateString[-2:]
+                FedRegFormat = re.compile(r'document-citation.+(\d{2}\s[A-Z]{2}\s\d{4,5})\\n', flags=re.M)
+                revocation_FedReg = FedRegFormat.findall(longwebContent)[0]
+                HScodeFormate = re.compile(r'(\d{4}\.\d{2}\.\d{4})', flags=re.M)
+                revocation_HScodeList = list(HScodeFormate.findall(longwebContent))
+                print(len(revocation_HScodeList))
+                print(revocation_HScodeList)
     if len(initiation) == 0 or len(activation) == 0:
         print('take a look! we do not have initiation or activation in this product?')
-    if len(activation) > 0:
+    # if len(activation) > 0:
         # we should only have 1 activation file per product
         # find DOC No., Year, Month, Date, HS1, HS2, HS3, HS4, HS5, HS6, HS7, Product, Country, Exporter, ExpAltNm, Producer, PdAltNm,  ProducerID,  AD_CVD, Dumping Margin, Cash Deposit, Action, Source
-        dataFormat = re.compile(r'Publication Date:.+documents\/(.+?)">',
-                flags=re.M)
-        title = dataFormat.findall(longwebContent)[0]
 
     # print("initiation")
     # print(initiation)
@@ -80,6 +152,8 @@ def AntiDumping(DOC, product):
     # print("revocation")
     # print(revocation)
 AntiDumping('A-201-842', 'Large Residential Washers')
+# AntiDumping('A-201-838', 'Softwood lumber')
+# AntiDumping('A-201-840', 'Carbon steel wire rod')
 
 # todo: change this function to match antidumping duty
 # def Countervailing(DOC, product):
