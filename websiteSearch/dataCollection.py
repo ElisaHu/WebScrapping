@@ -17,6 +17,9 @@ productArray = productColumn[1:].values
 
 def AntiDumping(DOC, product):
     # get the website link, read content from it
+    initiation_df = pd.DataFrame()
+    activation_df = pd.DataFrame()
+    revocation_df = pd.DataFrame()
     url = 'https://www.federalregister.gov/documents/search?conditions%5Bterm%5D=' + DOC
     response = urllib.request.urlopen(url)
     webContent = str(response.read())
@@ -68,6 +71,17 @@ def AntiDumping(DOC, product):
                 initiation_petitioners = []
                 petitionerFormat = re.compile(r'by\s(.+)\s\(“the petitioner”\)',flags=re.M)
                 initiation_petitioners.append(petitionerFormat.findall(longwebContent)[0])
+                initiation_df['Action'] = initiation_action
+                initiation_df['Year'] = [initiation_year]
+                initiation_df['Month'] = [initiation_month]
+                initiation_df['Date'] = [initiation_date]
+                initiation_df['FedReg'] = [initiation_FedReg]
+                initiation_df['AD/CVD'] = ['AD']
+                for i in range(len(initiation_petitioners)):
+                    initiation_df['Petitioner' + str(i-1)] = initiation_petitioners[i]
+                    initiation_df['Ptner' + str(i - 1) + 'AltNm'] = ''
+                initiation_df['Source'] = [initiation_source]
+
             if 'Antidumping Duty Orders' in title:
                 print(title)
                 activation.append(i)
@@ -84,50 +98,55 @@ def AntiDumping(DOC, product):
                 activation_FedReg = FedRegFormat.findall(longwebContent)[0]
                 html = requests.get(i).content
                 df_list = pd.read_html(html)
-                df = pd.DataFrame(df_list[-1])
+                activation_df = pd.DataFrame(df_list[-1])
                 # fill country name
                 last = ''
                 countries = []
-                for i in range(len(df['Country'])):
-                    curr = df['Country'][i]
+                for i in range(len(activation_df['Country'])):
+                    curr = activation_df['Country'][i]
                     if isinstance(curr, str):
                         last = curr
                         countries.append(curr)
                     else:
                         countries.append(last)
-                df['Country'] = countries
-                df['Year'] = [activation_year]*len(df)
-                df['Month'] = [activation_month]*len(df)
-                df['Date'] = [activation_date]*len(df)
-                df['FedReg'] = [activation_FedReg]*len(df)
-                df['AD/CVD'] = ['AD']*len(df)
-                df['Action'] = [activation_action]*len(df)
+                len_of_act = len(activation_df)
+                activation_df['Country'] = countries
+                activation_df['Year'] = [activation_year]*len_of_act
+                activation_df['Month'] = [activation_month]*len_of_act
+                activation_df['Date'] = [activation_date]*len_of_act
+                activation_df = activation_df.rename({'Manufacturer/Exporter': 'Exporter'}, axis=1)
+                activation_df['FedReg'] = [activation_FedReg]*len_of_act
+                activation_df['AD/CVD'] = ['AD']*len_of_act
+                activation_df['Action'] = [activation_action]*len_of_act
 
                 HScodeFormate = re.compile(r'(\d{4}\.\d{2}\.\d{4})', flags=re.M)
                 activation_HScodeList = list(HScodeFormate.findall(longwebContent))
                 if len(activation_HScodeList) == 5:
                     for i in range(0, len(activation_HScodeList)):
-                        df['HS' + str(i+1)] = [activation_HScodeList[i]]*len(df)
+                        activation_df['HS' + str(i+1)] = [activation_HScodeList[i]]*len_of_act
                 if len(activation_HScodeList) == 6:
-                    df['HS' + '3'] = ''
+                    activation_df['HS' + '3'] = ''
                     for i in range(0, len(activation_HScodeList)):
-                        if i < 3:
-                            df['HS' + str(i+1)] = [activation_HScodeList[i]]*len(df)
-                        if i >= 3:
-                            df['HS' + str(i+2)] = [activation_HScodeList[i]]*len(df)
+                        if i < 2:
+                            activation_df['HS' + str(i+1)] = [activation_HScodeList[i]]*len_of_act
+                        if i == 2:
+                            activation_df['HS' + str(i + 1)] = ''
+                        if i > 2:
+                            activation_df['HS' + str(i + 1)] = [activation_HScodeList[i]]*len_of_act
                 if len(activation_HScodeList) < 5 or len(activation_HScodeList) > 6:
                     print('irregular HScode')
                     for i in range(0, len(activation_HScodeList)):
-                        df['HS' + str(i+1)] = [activation_HScodeList[i]]*len(df)
-                df['source'] = [activation_source]*len(df)
-                print(df)
-                df.to_csv(product + '.csv')
+                        activation_df['HS' + str(i+1)] = [activation_HScodeList[i]]*len_of_act
+                activation_df['Source'] = [activation_source]*len_of_act
+                # activation_df.to_csv(product + '_activation.csv')
 
             if 'Revocation of Antidumping' in title:
                 print(title)
                 revocation.append(i)
                 revocation_source = i
                 revocation_action = 'revocation'
+                countryFormat = re.compile(r'Revocation of Antidumping.+\((.+?)\)', flags=re.M)
+                revocation_country = countryFormat.findall(title)[0]
                 dateFormat = re.compile(r'Publication Date.+documents/(\d{4}/\d{2}/\d{2})', flags=re.M)
                 dateString = dateFormat.findall(longwebContent)[0]
                 revocation_year = dateString[:4]
@@ -137,20 +156,58 @@ def AntiDumping(DOC, product):
                 revocation_FedReg = FedRegFormat.findall(longwebContent)[0]
                 HScodeFormate = re.compile(r'(\d{4}\.\d{2}\.\d{4})', flags=re.M)
                 revocation_HScodeList = list(HScodeFormate.findall(longwebContent))
-                print(len(revocation_HScodeList))
-                print(revocation_HScodeList)
+                revocation_df['Country'] = [revocation_country]
+                revocation_df['Action'] = [revocation_action]
+                revocation_df['Year'] = [revocation_year]
+                revocation_df['Month'] = [revocation_month]
+                revocation_df['Date'] = [revocation_date]
+                revocation_df['FedReg'] = [revocation_FedReg]
+                revocation_df['AD/CVD'] = ['AD']
+                if len(revocation_HScodeList) == 5:
+                    for i in range(0, len(revocation_HScodeList)):
+                        revocation_df['HS' + str(i+1)] = [revocation_HScodeList[i]]
+                if len(revocation_HScodeList) == 6:
+                    for i in range(0, len(revocation_HScodeList)):
+                        if i < 2:
+                            revocation_df['HS' + str(i+1)] = [revocation_HScodeList[i]]
+                        if i == 2:
+                            revocation_df['HS' + str(i + 1)] = ''
+                        if i > 2:
+                            revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i]]
+                if len(revocation_HScodeList) < 5 or len(revocation_HScodeList) > 6:
+                    print('irregular HScode')
+                    for i in range(0, len(revocation_HScodeList)):
+                        revocation_df['HS' + str(i+1)] = [revocation_HScodeList[i]]
+
+                revocation_df['Source'] = [revocation_source]
+                revocation_df.to_csv(product + '_revocation.csv')
+    # special for initiation: petitioners
+    # special for activation: "Dumping margin","Cash deposit (%)", "Exporter"
     if len(initiation) == 0 or len(activation) == 0:
         print('take a look! we do not have initiation or activation in this product?')
-    # if len(activation) > 0:
-        # we should only have 1 activation file per product
-        # find DOC No., Year, Month, Date, HS1, HS2, HS3, HS4, HS5, HS6, HS7, Product, Country, Exporter, ExpAltNm, Producer, PdAltNm,  ProducerID,  AD_CVD, Dumping Margin, Cash Deposit, Action, Source
+    if len(initiation) != 0:
+        Petitioner_column = [col for col in initiation_df.columns if 'Petitioner' in col or 'Ptner' in col]
+        initiation_df_subset = initiation_df[["Country", Petitioner_column]]
+        if not activation_df.empty:
+            activation_df = initiation_df_subset.merge(revocation_df, on=["Country"])
+        if not revocation_df.empty:
+            revocation_df = initiation_df_subset.merge(revocation_df, on=["Country"])
+    if len(activation) != 0:
+        activation_df_subset = activation_df[["Country", "Dumping margin", "Cash deposit (%)", "Exporter"]]
+        if not initiation_df.empty:
+            initiation_df = activation_df_subset.merge(initiation_df, on=["Country"])
+        if not revocation_df.empty:
+            revocation_df = activation_df_subset.merge(revocation_df, on=["Country"])
 
-    # print("initiation")
-    # print(initiation)
-    # print("activation")
-    # print(activation)
-    # print("revocation")
-    # print(revocation)
+    combine1 = revocation_df.merge(activation_df, on=["FedReg", "Country", "Dumping margin","Cash deposit (%)", "Exporter",
+                                                 "HS1", "HS2", "HS3", "HS4", "HS5", "Year", "Month", "Date", "AD/CVD",
+                                                 "Action", "Source"], how='outer')
+    # combine2 = initiation_df.merge(combine1, on=["FedReg", "Country", "Dumping margin","Cash deposit (%)", "Exporter",
+    #                                              "HS1", "HS2", "HS3", "HS4", "HS5", "Year", "Month", "Date", "AD/CVD",
+    #                                              "Action", "Source"], how='outer')
+    combine1 = combine1.sort_values('Year')
+    combine1.to_csv(product + '.csv', index=False)
+
 AntiDumping('A-201-842', 'Large Residential Washers')
 # AntiDumping('A-201-838', 'Softwood lumber')
 # AntiDumping('A-201-840', 'Carbon steel wire rod')
