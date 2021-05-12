@@ -13,7 +13,7 @@ column = my_csv['DOCNo']
 DOCarray = column[1:].values
 productColumn = my_csv['Product']
 productArray = productColumn[1:].values
-
+all_countries = ['Afghanistan', 'Aland Islands', 'Albania', 'Algeria', 'American Samoa', 'Andorra', 'Angola', 'Anguilla', 'Antarctica', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Aruba', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bermuda', 'Bhutan', 'Bolivia, Plurinational State of', 'Bonaire, Sint Eustatius and Saba', 'Bosnia and Herzegovina', 'Botswana', 'Bouvet Island', 'Brazil', 'British Indian Ocean Territory', 'Brunei Darussalam', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Cape Verde', 'Cayman Islands', 'Central African Republic', 'Chad', 'Chile', 'China', 'Christmas Island', 'Cocos (Keeling) Islands', 'Colombia', 'Comoros', 'Congo', 'Congo, The Democratic Republic of the', 'Cook Islands', 'Costa Rica', "Côte d'Ivoire", 'Croatia', 'Cuba', 'Curaçao', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Ethiopia', 'Falkland Islands (Malvinas)', 'Faroe Islands', 'Fiji', 'Finland', 'France', 'French Guiana', 'French Polynesia', 'French Southern Territories', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Gibraltar', 'Greece', 'Greenland', 'Grenada', 'Guadeloupe', 'Guam', 'Guatemala', 'Guernsey', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Heard Island and McDonald Islands', 'Holy See (Vatican City State)', 'Honduras', 'Hong Kong', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran, Islamic Republic of', 'Iraq', 'Ireland', 'Isle of Man', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jersey', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', "Korea, Democratic People's Republic of", 'Korea, Republic of', 'Kuwait', 'Kyrgyzstan', "Lao People's Democratic Republic", 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macao', 'Macedonia, Republic of', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Martinique', 'Mauritania', 'Mauritius', 'Mayotte', 'Mexico', 'Micronesia, Federated States of', 'Moldova, Republic of', 'Monaco', 'Mongolia', 'Montenegro', 'Montserrat', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Caledonia', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Niue', 'Norfolk Island', 'Northern Mariana Islands', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Palestinian Territory, Occupied', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Pitcairn', 'Poland', 'Portugal', 'Puerto Rico', 'Qatar', 'Réunion', 'Romania', 'Russian Federation', 'Rwanda', 'Saint Barthélemy', 'Saint Helena, Ascension and Tristan da Cunha', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Martin (French part)', 'Saint Pierre and Miquelon', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Sint Maarten (Dutch part)', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Georgia and the South Sandwich Islands', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'South Sudan', 'Svalbard and Jan Mayen', 'Swaziland', 'Sweden', 'Switzerland', 'Syrian Arab Republic', 'Taiwan, Province of China', 'Tajikistan', 'Tanzania, United Republic of', 'Thailand', 'Timor-Leste', 'Togo', 'Tokelau', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Turks and Caicos Islands', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'United States Minor Outlying Islands', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Venezuela, Bolivarian Republic of', 'Viet Nam', 'Virgin Islands, British', 'Virgin Islands, U.S.', 'Wallis and Futuna', 'Yemen', 'Zambia', 'Zimbabwe']
 
 def AntiDumping(DOC, product):
     # get the website link, read content from it
@@ -23,7 +23,7 @@ def AntiDumping(DOC, product):
     url = 'https://www.federalregister.gov/documents/search?conditions%5Bterm%5D=' + DOC
     response = urllib.request.urlopen(url)
     webContent = str(response.read())
-    for pageNum in range(2, 10):
+    for pageNum in range(2, 20):
         nextPage = url + '&page=' + str(pageNum)
         response = urllib.request.urlopen(nextPage)
         thisPageWebContent = str(response.read())
@@ -37,7 +37,7 @@ def AntiDumping(DOC, product):
     webLinkFormat = re.compile(r'"(https://www.federalregister.gov/documents/\d+.+?)"', flags=re.M)
     webLinkList = webLinkFormat.findall(webContent)
     # print(webLinkList)
-    print(len(webLinkList))
+    # print(len(webLinkList))
     initiation = []
     activation = []
     revocation = []
@@ -57,7 +57,7 @@ def AntiDumping(DOC, product):
             if 'Notice' in title:
                 continue;
             if 'Initiation of Antidumping Duty' in title:
-                print(title)
+                print('initiation' + title)
                 initiation.append(i)
                 initiation_source = i
                 initiation_action = 'initiation'
@@ -82,8 +82,9 @@ def AntiDumping(DOC, product):
                     initiation_df['Ptner' + str(i - 1) + 'AltNm'] = ''
                 initiation_df['Source'] = [initiation_source]
 
-            if 'Antidumping Duty Orders' in title:
-                print(title)
+            if 'Antidumping Duty Order' in title:
+                print('start ' + title)
+                print(i)
                 activation.append(i)
                 activation_source = i
                 activation_action = 'activation'
@@ -93,23 +94,30 @@ def AntiDumping(DOC, product):
                 activation_year = dateString[:4]
                 activation_month = dateString[5:7]
                 activation_date = dateString[-2:]
-                FedRegFormat = re.compile(r'document-citation.+(\d{2}\s[A-Z]{2}\s\d{4,5})\\n',
+                FedRegFormat = re.compile(r'document-citation.+(\d{2}\s[A-Z]{2}\s\d{3,5})\\n',
                                           flags=re.M)
                 activation_FedReg = FedRegFormat.findall(longwebContent)[0]
                 html = requests.get(i).content
                 df_list = pd.read_html(html)
                 activation_df = pd.DataFrame(df_list[-1])
-                # fill country name
-                last = ''
-                countries = []
-                for i in range(len(activation_df['Country'])):
-                    curr = activation_df['Country'][i]
-                    if isinstance(curr, str):
-                        last = curr
-                        countries.append(curr)
-                    else:
-                        countries.append(last)
                 len_of_act = len(activation_df)
+                # fill country name
+                if 'Country' in activation_df.columns.tolist():
+                    last = ''
+                    countries = []
+                    for i in range(len(activation_df['Country'])):
+                        curr = activation_df['Country'][i]
+                        if isinstance(curr, str):
+                            last = curr
+                            countries.append(curr)
+                        else:
+                            countries.append(last)
+                else:
+                    for c in all_countries:
+                        # check if Country is in TXT
+                        if c in title:
+                            countries = [c]*len_of_act
+
                 activation_df['Country'] = countries
                 activation_df['Year'] = [activation_year]*len_of_act
                 activation_df['Month'] = [activation_month]*len_of_act
@@ -126,22 +134,22 @@ def AntiDumping(DOC, product):
                         activation_df['HS' + str(i+1)] = [activation_HScodeList[i]]*len_of_act
                 if len(activation_HScodeList) == 6:
                     activation_df['HS' + '3'] = ''
-                    for i in range(0, len(activation_HScodeList)):
+                    for i in range(0, len(activation_HScodeList)+1):
                         if i < 2:
                             activation_df['HS' + str(i+1)] = [activation_HScodeList[i]]*len_of_act
                         if i == 2:
                             activation_df['HS' + str(i + 1)] = ''
                         if i > 2:
-                            activation_df['HS' + str(i + 1)] = [activation_HScodeList[i]]*len_of_act
+                            activation_df['HS' + str(i + 1)] = [activation_HScodeList[i-1]]*len_of_act
                 if len(activation_HScodeList) < 5 or len(activation_HScodeList) > 6:
                     print('irregular HScode')
                     for i in range(0, len(activation_HScodeList)):
                         activation_df['HS' + str(i+1)] = [activation_HScodeList[i]]*len_of_act
                 activation_df['Source'] = [activation_source]*len_of_act
-                # activation_df.to_csv(product + '_activation.csv')
+                activation_df.to_csv(product + '_activation.csv')
 
             if 'Revocation of Antidumping' in title:
-                print(title)
+                print('end' + title)
                 revocation.append(i)
                 revocation_source = i
                 revocation_action = 'revocation'
@@ -166,14 +174,15 @@ def AntiDumping(DOC, product):
                 if len(revocation_HScodeList) == 5:
                     for i in range(0, len(revocation_HScodeList)):
                         revocation_df['HS' + str(i+1)] = [revocation_HScodeList[i]]
+                # todo: probably fix the order
                 if len(revocation_HScodeList) == 6:
-                    for i in range(0, len(revocation_HScodeList)):
+                    for i in range(0, len(revocation_HScodeList)+1):
                         if i < 2:
                             revocation_df['HS' + str(i+1)] = [revocation_HScodeList[i]]
                         if i == 2:
                             revocation_df['HS' + str(i + 1)] = ''
                         if i > 2:
-                            revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i]]
+                            revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i-1]]
                 if len(revocation_HScodeList) < 5 or len(revocation_HScodeList) > 6:
                     print('irregular HScode')
                     for i in range(0, len(revocation_HScodeList)):
@@ -199,17 +208,17 @@ def AntiDumping(DOC, product):
         if not revocation_df.empty:
             revocation_df = activation_df_subset.merge(revocation_df, on=["Country"])
 
-    combine1 = revocation_df.merge(activation_df, on=["FedReg", "Country", "Dumping margin","Cash deposit (%)", "Exporter",
-                                                 "HS1", "HS2", "HS3", "HS4", "HS5", "Year", "Month", "Date", "AD/CVD",
-                                                 "Action", "Source"], how='outer')
+    # combine1 = revocation_df.merge(activation_df, on=["FedReg", "Country", "Dumping margin","Cash deposit (%)", "Exporter",
+    #                                              "HS1", "HS2", "HS3", "HS4", "HS5", "Year", "Month", "Date", "AD/CVD",
+    #                                              "Action", "Source"], how='outer')
     # combine2 = initiation_df.merge(combine1, on=["FedReg", "Country", "Dumping margin","Cash deposit (%)", "Exporter",
     #                                              "HS1", "HS2", "HS3", "HS4", "HS5", "Year", "Month", "Date", "AD/CVD",
     #                                              "Action", "Source"], how='outer')
-    combine1 = combine1.sort_values('Year')
-    combine1.to_csv(product + '.csv', index=False)
+    # combine1 = combine1.sort_values('Year')
+    # combine1.to_csv(product + '.csv', index=False)
 
-AntiDumping('A-201-842', 'Large Residential Washers')
-# AntiDumping('A-201-838', 'Softwood lumber')
+# AntiDumping('A-201-842', 'Large Residential Washers')
+AntiDumping('A-570-051', 'Hardwood Plywood Products')
 # AntiDumping('A-201-840', 'Carbon steel wire rod')
 
 # todo: change this function to match antidumping duty
