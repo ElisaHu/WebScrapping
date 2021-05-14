@@ -42,22 +42,25 @@ def AntiDumping(DOC, product):
     activation = []
     revocation = []
     for i in webLinkList:
-        productLink = product.replace(' ', '-').lower()
-        if productLink in i:
+        productName = product.replace(' ', '-').lower()
+        if productName in i:
             longlink = urllib.request.urlopen(i)
             longwebContent = str(longlink.read())
             titlePattern = re.compile(
                 r'<div id="metadata_content_area" class="metadata-content-area">\\n.+<h1>(.+?)<\/h1>',
                 flags=re.M)
             title = titlePattern.findall(longwebContent)[0]
+            print(title)
             if 'Review' in title:
                 continue;
             if 'Preliminary' in title:
                 continue;
             if 'Notice' in title:
                 continue;
+            if product not in title:
+                continue;
             if 'Initiation of Antidumping Duty' in title:
-                print('initiation' + title)
+                print('initiation: ' + title)
                 initiation.append(i)
                 initiation_source = i
                 initiation_action = 'initiation'
@@ -69,20 +72,78 @@ def AntiDumping(DOC, product):
                 FedRegFormat = re.compile(r'document-citation.+(\d{2}\s[A-Z]{2}\s\d{4,5})\\n',flags=re.M)
                 initiation_FedReg = FedRegFormat.findall(longwebContent)[0]
                 initiation_petitioners = []
-                petitionerFormat = re.compile(r'by\s(.+)\s\(“the petitioner”\)',flags=re.M)
-                initiation_petitioners.append(petitionerFormat.findall(longwebContent)[0])
-                initiation_df['Action'] = initiation_action
-                initiation_df['Year'] = [initiation_year]
-                initiation_df['Month'] = [initiation_month]
-                initiation_df['Date'] = [initiation_date]
-                initiation_df['FedReg'] = [initiation_FedReg]
-                initiation_df['AD/CVD'] = ['AD']
+                petitionerFormat1 = re.compile(r'proper\sform\sby\s(.+)\s\(“the petitioner”\)',flags=re.M)
+                if len(petitionerFormat1.findall(longwebContent)) != 0:
+                    initiation_petitioners.append(petitionerFormat1.findall(longwebContent)[0])
+                petitionerFormat2 = re.compile(r'proper\sform\sby\s(.+?)\s\(&ldquo;Petitioner&rdquo;\)', flags=re.M)
+                if len(petitionerFormat2.findall(longwebContent)) != 0:
+                    initiation_petitioners.append(petitionerFormat2.findall(longwebContent)[0])
+                countries = []
+                for c in all_countries:
+                    # check if Country is in TXT
+                    if c in title:
+                        countries.append(c)
+                initiation_df['Country'] = countries
+                initiation_df['Action'] = [initiation_action]*len(countries)
+                initiation_df['Year'] = [initiation_year]*len(countries)
+                initiation_df['Month'] = [initiation_month]*len(countries)
+                initiation_df['Date'] = [initiation_date]*len(countries)
+                initiation_df['FedReg'] = [initiation_FedReg]*len(countries)
+                initiation_df['AD/CVD'] = ['AD']*len(countries)
                 for i in range(len(initiation_petitioners)):
-                    initiation_df['Petitioner' + str(i-1)] = initiation_petitioners[i]
-                    initiation_df['Ptner' + str(i - 1) + 'AltNm'] = ''
-                initiation_df['Source'] = [initiation_source]
+                    initiation_df['Petitioner' + str(i+1)] = initiation_petitioners[i]*len(countries)
+                    initiation_df['Ptner' + str(i +1) + 'AltNm'] = ['']*len(countries)
+                initiation_df['Source'] = [initiation_source]*len(countries)
 
-            if 'Antidumping Duty Order' in title:
+            if 'Revocation of Antidumping' in title or 'Revocation of the Antidumping' in title:
+                print('end' + title)
+                revocation.append(i)
+                revocation_source = i
+                revocation_action = 'revocation'
+                countryFormat = re.compile(r'(Revocation.+)', flags=re.M)
+                revocation_country = countryFormat.findall(title)[0]
+                countries = []
+                for c in all_countries:
+                    # check if Country is in TXT
+                    if c in revocation_country:
+                        countries.append(c)
+                dateFormat = re.compile(r'Publication Date.+documents/(\d{4}/\d{2}/\d{2})', flags=re.M)
+                dateString = dateFormat.findall(longwebContent)[0]
+                revocation_year = dateString[:4]
+                revocation_month = dateString[5:7]
+                revocation_date = dateString[-2:]
+                FedRegFormat = re.compile(r'document-citation.+(\d{2}\s[A-Z]{2}\s\d{4,5})\\n', flags=re.M)
+                revocation_FedReg = FedRegFormat.findall(longwebContent)[0]
+                HScodeFormate = re.compile(r'(\d{4}\.\d{2}\.\d{4})', flags=re.M)
+                revocation_HScodeList = list(HScodeFormate.findall(longwebContent))
+                revocation_df['Country'] = countries
+                revocation_df['Action'] = [revocation_action]
+                revocation_df['Year'] = [revocation_year]
+                revocation_df['Month'] = [revocation_month]
+                revocation_df['Date'] = [revocation_date]
+                revocation_df['FedReg'] = [revocation_FedReg]
+                revocation_df['AD/CVD'] = ['AD']
+                if len(revocation_HScodeList) == 5:
+                    for i in range(0, len(revocation_HScodeList)):
+                        revocation_df['HS' + str(i+1)] = [revocation_HScodeList[i]]
+                # todo: probably fix the order
+                if len(revocation_HScodeList) == 6:
+                    for i in range(0, len(revocation_HScodeList)+1):
+                        if i < 2:
+                            revocation_df['HS' + str(i+1)] = [revocation_HScodeList[i]]
+                        if i == 2:
+                            revocation_df['HS' + str(i + 1)] = ''
+                        if i > 2:
+                            revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i-1]]
+                if len(revocation_HScodeList) < 5 or len(revocation_HScodeList) > 6:
+                    print('irregular HScode')
+                    for i in range(0, len(revocation_HScodeList)):
+                        revocation_df['HS' + str(i+1)] = [revocation_HScodeList[i]]
+
+                revocation_df['Source'] = [revocation_source]
+                revocation_df.to_csv(product + '_revocation.csv')
+
+            if 'Antidumping Duty Order' in title and 'Continuation' not in title:
                 print('start ' + title)
                 print(i)
                 activation.append(i)
@@ -101,22 +162,27 @@ def AntiDumping(DOC, product):
                 df_list = pd.read_html(html)
                 activation_df = pd.DataFrame(df_list[-1])
                 len_of_act = len(activation_df)
-                # fill country name
-                if 'Country' in activation_df.columns.tolist():
-                    last = ''
+                # fill first column value
+                last = ''
+                firstcolumn = []
+                firstcolumnname = activation_df.columns.tolist()[0]
+                for i in range(len_of_act):
+                    curr = activation_df[firstcolumnname][i]
+                    if isinstance(curr, str):
+                        last = curr
+                        firstcolumn.append(curr)
+                    else:
+                        firstcolumn.append(last)
+                activation_df[firstcolumnname] = firstcolumn
+                if 'Country' not in activation_df.columns.tolist():
                     countries = []
-                    for i in range(len(activation_df['Country'])):
-                        curr = activation_df['Country'][i]
-                        if isinstance(curr, str):
-                            last = curr
-                            countries.append(curr)
-                        else:
-                            countries.append(last)
-                else:
                     for c in all_countries:
                         # check if Country is in TXT
                         if c in title:
                             countries = [c]*len_of_act
+                # if activation_df.columns.tolist().
+                if 'Producer' not in activation_df.columns.tolist():
+                    activation_df['Producer'] = activation_df['Exporter'].copy()
 
                 activation_df['Country'] = countries
                 activation_df['Year'] = [activation_year]*len_of_act
@@ -148,78 +214,47 @@ def AntiDumping(DOC, product):
                 activation_df['Source'] = [activation_source]*len_of_act
                 activation_df.to_csv(product + '_activation.csv')
 
-            if 'Revocation of Antidumping' in title:
-                print('end' + title)
-                revocation.append(i)
-                revocation_source = i
-                revocation_action = 'revocation'
-                countryFormat = re.compile(r'Revocation of Antidumping.+\((.+?)\)', flags=re.M)
-                revocation_country = countryFormat.findall(title)[0]
-                dateFormat = re.compile(r'Publication Date.+documents/(\d{4}/\d{2}/\d{2})', flags=re.M)
-                dateString = dateFormat.findall(longwebContent)[0]
-                revocation_year = dateString[:4]
-                revocation_month = dateString[5:7]
-                revocation_date = dateString[-2:]
-                FedRegFormat = re.compile(r'document-citation.+(\d{2}\s[A-Z]{2}\s\d{4,5})\\n', flags=re.M)
-                revocation_FedReg = FedRegFormat.findall(longwebContent)[0]
-                HScodeFormate = re.compile(r'(\d{4}\.\d{2}\.\d{4})', flags=re.M)
-                revocation_HScodeList = list(HScodeFormate.findall(longwebContent))
-                revocation_df['Country'] = [revocation_country]
-                revocation_df['Action'] = [revocation_action]
-                revocation_df['Year'] = [revocation_year]
-                revocation_df['Month'] = [revocation_month]
-                revocation_df['Date'] = [revocation_date]
-                revocation_df['FedReg'] = [revocation_FedReg]
-                revocation_df['AD/CVD'] = ['AD']
-                if len(revocation_HScodeList) == 5:
-                    for i in range(0, len(revocation_HScodeList)):
-                        revocation_df['HS' + str(i+1)] = [revocation_HScodeList[i]]
-                # todo: probably fix the order
-                if len(revocation_HScodeList) == 6:
-                    for i in range(0, len(revocation_HScodeList)+1):
-                        if i < 2:
-                            revocation_df['HS' + str(i+1)] = [revocation_HScodeList[i]]
-                        if i == 2:
-                            revocation_df['HS' + str(i + 1)] = ''
-                        if i > 2:
-                            revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i-1]]
-                if len(revocation_HScodeList) < 5 or len(revocation_HScodeList) > 6:
-                    print('irregular HScode')
-                    for i in range(0, len(revocation_HScodeList)):
-                        revocation_df['HS' + str(i+1)] = [revocation_HScodeList[i]]
 
-                revocation_df['Source'] = [revocation_source]
-                revocation_df.to_csv(product + '_revocation.csv')
     # special for initiation: petitioners
     # special for activation: "Dumping margin","Cash deposit (%)", "Exporter"
     if len(initiation) == 0 or len(activation) == 0:
         print('take a look! we do not have initiation or activation in this product?')
     if len(initiation) != 0:
         Petitioner_column = [col for col in initiation_df.columns if 'Petitioner' in col or 'Ptner' in col]
-        initiation_df_subset = initiation_df[["Country", Petitioner_column]]
+        Petitioner_column.append("Country")
+        initiation_df_subset = initiation_df[Petitioner_column]
         if not activation_df.empty:
-            activation_df = initiation_df_subset.merge(revocation_df, on=["Country"])
+            activation_df = activation_df.merge(initiation_df_subset, on=["Country"])
         if not revocation_df.empty:
-            revocation_df = initiation_df_subset.merge(revocation_df, on=["Country"])
+            revocation_df = revocation_df.merge(initiation_df_subset, on=["Country"])
     if len(activation) != 0:
-        activation_df_subset = activation_df[["Country", "Dumping margin", "Cash deposit (%)", "Exporter"]]
+        # activation_df_subset = activation_df[["Country", "Dumping margin", "Cash deposit (%)", "Exporter"]]
+        activation_df_subset = activation_df[["Country", "Exporter", "Producer"]]
         if not initiation_df.empty:
             initiation_df = activation_df_subset.merge(initiation_df, on=["Country"])
         if not revocation_df.empty:
             revocation_df = activation_df_subset.merge(revocation_df, on=["Country"])
 
-    # combine1 = revocation_df.merge(activation_df, on=["FedReg", "Country", "Dumping margin","Cash deposit (%)", "Exporter",
-    #                                              "HS1", "HS2", "HS3", "HS4", "HS5", "Year", "Month", "Date", "AD/CVD",
-    #                                              "Action", "Source"], how='outer')
-    # combine2 = initiation_df.merge(combine1, on=["FedReg", "Country", "Dumping margin","Cash deposit (%)", "Exporter",
-    #                                              "HS1", "HS2", "HS3", "HS4", "HS5", "Year", "Month", "Date", "AD/CVD",
-    #                                              "Action", "Source"], how='outer')
-    # combine1 = combine1.sort_values('Year')
-    # combine1.to_csv(product + '.csv', index=False)
+    if len(revocation) != 0:
+        combine_act_rev = revocation_df.merge(activation_df, on=["FedReg", "Country", "Dumping margin", "Exporter", "Producer"
+                                                 "HS1", "HS2", "HS3", "HS4", "HS5", "Year", "Month", "Date", "AD/CVD",
+                                                 "Action", "Source"], how='outer')
+    else:
+        combine_act_rev = activation_df
+    if len(initiation) == 0:
+        combine_act_rev.to_csv(product + '.csv', index=False)
+        return
+
+    combine_column = ["Country", "FedReg", "Year", "Month", "Date", "AD/CVD", "Action", "Exporter", "Producer", "Source"]
+    for i in Petitioner_column:
+        combine_column.append(i)
+    combine_int_rest = initiation_df.merge(combine_act_rev, on=list(combine_column), how='outer')
+    combine_int_rest = combine_int_rest.sort_values('Year')
+    combine_int_rest.to_csv(product + '.csv', index=False)
 
 # AntiDumping('A-201-842', 'Large Residential Washers')
-AntiDumping('A-570-051', 'Hardwood Plywood Products')
-# AntiDumping('A-201-840', 'Carbon steel wire rod')
+AntiDumping('A-580-850', 'Polyvinyl Alcohol')
+# AntiDumping('A-570-979', 'Crystalline Silicon Photovoltaic Cells')
 
 # todo: change this function to match antidumping duty
 # def Countervailing(DOC, product):
