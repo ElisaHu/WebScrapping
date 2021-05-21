@@ -9,7 +9,7 @@ import numpy as np
 import lxml
 
 # get numpy array from csv file
-my_csv = pd.read_csv('Overall.csv')
+my_csv = pd.read_csv('Sample_overall.csv')
 column = my_csv['DOCNo']
 DOCarray = column[1:].values
 productColumn = my_csv['Product']
@@ -151,17 +151,18 @@ def AntiDumping(DOC, product):
                 FedRegFormat = re.compile(r'document-citation.+(\d{2}\s[A-Z]{2}\s\d{4,5})\\n', flags=re.M)
                 initiation_FedReg = FedRegFormat.findall(longwebContent)[0]
                 initiation_petitioners = []
-                petitionerFormat1 = re.compile(r'proper\sform\sby\s(.+)\s\(“the petitioner”\)', flags=re.M)
+                petitionerFormat1 = re.compile(r'proper\sform\sby\s(.+)\s\(“(?:\w{3}\s)\wetitioner(?:\w)?”\)', flags=re.M)
                 if len(petitionerFormat1.findall(longwebContent)) != 0:
                     initiation_petitioners.append(petitionerFormat1.findall(longwebContent)[0])
-                petitionerFormat2 = re.compile(r'proper\sform\sby\s(.+?)\s\(&ldquo;Petitioner&rdquo;\)', flags=re.M)
+                petitionerFormat2 = re.compile(r'proper\sform\sby\s(.+?)\s\(&ldquo;(?:\w{3}\s)\wetitioner(?:\w)?&rdquo;\)', flags=re.M)
                 if len(petitionerFormat2.findall(longwebContent)) != 0:
                     initiation_petitioners.append(petitionerFormat2.findall(longwebContent)[0])
-                petitionerFormat3 = re.compile(r'proper\sform\sby\s(.+?)\s\(collectively, &ldquo;Petitioners&rdquo;\)', flags=re.M)
-                if len(petitionerFormat3.findall(longwebContent)) != 0:
-                    initiation_petitioners = petitionerFormat3.findall(longwebContent)[0].split(",")
-                petitionerFormat4 = re.compile(r'proper\sform\sby\s(.+?)\s\(collectively, &ldquo;the Petitioners&rdquo;\)',
+                petitionerFormat3 = re.compile(r'proper\sform\sby\s(.+?)\s\(collectively, &ldquo;(?:\w{3}\s)\wetitioner(?:\w)?&rdquo;\)',
                                                flags=re.M)
+                if len(petitionerFormat3.findall(longwebContent)) != 0:
+                    initiation_petitioners = petitionerFormat3.findall(longwebContent)[0].split("and")
+                petitionerFormat4 = re.compile(r'on behalf of\s(.+?)\s\(collectively, (?:\w{3}\s)\wetitioner(?:\w)?\)',
+                    flags=re.M)
                 if len(petitionerFormat4.findall(longwebContent)) != 0:
                     initiation_petitioners = petitionerFormat4.findall(longwebContent)[0].split(",")
                 countries = []
@@ -178,8 +179,12 @@ def AntiDumping(DOC, product):
                 initiation_df['AD/CVD'] = ['AD'] * len(countries)
                 for i in range(len(initiation_petitioners)):
                     initiation_df['Petitioner' + str(i + 1)] = initiation_petitioners[i] * len(countries)
-                    initiation_df['Ptner' + str(i + 1) + 'AltNm'] = [''] * len(countries)
-                SOIformat = re.compile(r'Scope of\s(.+?)</h2>(.+?)<h2 id=', flags=re.M)
+                    altnameformat = re.compile(r'\((.+?)\)', flags=re.M)
+                    altname = ''
+                    if len(altnameformat.findall(initiation_petitioners[i])) > 0:
+                        altname = altnameformat.findall(initiation_petitioners[i])[0]
+                    initiation_df['Ptner' + str(i + 1) + 'AltNm'] = [altname] * len(countries)
+                SOIformat = re.compile(r'Scope of\s(.+?)</h\d>(.+?)<h\d id=', flags=re.M)
                 SOI = SOIformat.findall(longwebContent)[1][1]
                 if len(SOI) > 0:
                     HScodeFormate = re.compile(r'(\d{4}\.\d{2}\.\d{4})', flags=re.M)
@@ -261,7 +266,9 @@ def AntiDumping(DOC, product):
                 firstcolumnname = activation_df.columns.tolist()[0]
                 lastcolumnname = activation_df.columns.tolist()[-1]
                 activation_df[lastcolumnname] = activation_df[lastcolumnname].astype(float, errors='ignore')
-                activation_df = activation_df[activation_df[lastcolumnname].apply(lambda x: tryfloat(x))]
+                if tryfloat(activation_df[lastcolumnname][0]) and tryfloat(activation_df[lastcolumnname][1]):
+                    activation_df = activation_df[activation_df[lastcolumnname].apply(lambda x: tryfloat(x))]
+                    activation_df = activation_df.reset_index(drop=True)
 
                 if firstcolumnname == 'Country' or firstcolumnname == 'Countries':
                     secondcolumnname = activation_df.columns.tolist()[1]
@@ -269,7 +276,6 @@ def AntiDumping(DOC, product):
                 else:
                     activation_df = activation_df.rename({firstcolumnname: 'Exporter'}, axis=1)
                     firstcolumnname = 'Exporter'
-                activation_df = activation_df.reset_index(drop=True)
 
                 len_of_act = len(activation_df)
                 for i in range(len_of_act):
@@ -386,7 +392,7 @@ def AntiDumping(DOC, product):
 # AntiDumping('A-570-979', 'Crystalline Silicon Photovoltaic Cells')
 # AntiDumping('A-201-828', 'Welded Large Diameter Line Pipes') # cannot do this, missing DOC number
 # AntiDumping('A-437-804', 'Sulfanilic Acid') # irregular format of the table, revocation with FA
-# AntiDumping('A-570-866', 'Folding Gift Boxes')
+AntiDumping('A-307-820', 'Silicomanganese')
 # AntiDumping('A-570-890', 'Wooden Bedroom Furniture')
 
 def Countervailing(DOC, product):
@@ -430,6 +436,8 @@ def Countervailing(DOC, product):
             print(title)
             if product not in title:
                 continue;
+            if 'Pursuant to Court Decision' in title:
+                continue
             if ('Revocation of' in title and 'Countervailing' in title) or 'Revocation of Orders' in title:
                 if 'Consideration of Revocation' in title:
                     continue
@@ -462,7 +470,6 @@ def Countervailing(DOC, product):
                 revocation_date = dateString[-2:]
                 FedRegFormat = re.compile(r'document-citation.+(\d{2}\s[A-Z]{2}\s\d{4,5})\\n', flags=re.M)
                 revocation_FedReg = FedRegFormat.findall(longwebContent)[0]
-                HScodeFormate = re.compile(r'(\d{4}\.\d{2}\.\d{4})', flags=re.M)
                 revocation_df['Country'] = countries
                 revocation_df['Action'] = [revocation_action]
                 revocation_df['Year'] = [revocation_year]
@@ -470,7 +477,7 @@ def Countervailing(DOC, product):
                 revocation_df['Date'] = [revocation_date]
                 revocation_df['FedReg'] = [revocation_FedReg]
                 revocation_df['AD/CVD'] = ['CVD']
-                SOIformat = re.compile(r'Scope of\s(.+?)</h2>(.+?)<h2 id=', flags=re.M)
+                SOIformat = re.compile(r'Scope of\s(.+?)</h\d>(.+?)<h\d id=', flags=re.M)
                 SOI = SOIformat.findall(longwebContent)[1][1]
                 if len(SOI) > 0:
                     HScodeFormate = re.compile(r'(\d{4}\.\d{2}\.\d{4})', flags=re.M)
@@ -522,17 +529,18 @@ def Countervailing(DOC, product):
                 FedRegFormat = re.compile(r'document-citation.+(\d{2}\s[A-Z]{2}\s\d{4,5})\\n', flags=re.M)
                 initiation_FedReg = FedRegFormat.findall(longwebContent)[0]
                 initiation_petitioners = []
-                petitionerFormat1 = re.compile(r'proper\sform\sby\s(.+)\s\(“the petitioner”\)', flags=re.M)
+                petitionerFormat1 = re.compile(r'proper\sform\sby\s(.+)\s\(“(?:\w{3}\s)\wetitioner(?:\w)?”\)', flags=re.M)
                 if len(petitionerFormat1.findall(longwebContent)) != 0:
                     initiation_petitioners.append(petitionerFormat1.findall(longwebContent)[0])
-                petitionerFormat2 = re.compile(r'proper\sform\sby\s(.+?)\s\(&ldquo;Petitioner&rdquo;\)', flags=re.M)
+                petitionerFormat2 = re.compile(r'proper\sform\sby\s(.+?)\s\(&ldquo;(?:\w{3}\s)\wetitioner(?:\w)?&rdquo;\)', flags=re.M)
                 if len(petitionerFormat2.findall(longwebContent)) != 0:
                     initiation_petitioners.append(petitionerFormat2.findall(longwebContent)[0])
-                petitionerFormat3 = re.compile(r'proper\sform\sby\s(.+?)\s\(collectively, &ldquo;Petitioners&rdquo;\)', flags=re.M)
-                if len(petitionerFormat3.findall(longwebContent)) != 0:
-                    initiation_petitioners = petitionerFormat3.findall(longwebContent)[0].split(",")
-                petitionerFormat4 = re.compile(r'proper\sform\sby\s(.+?)\s\(collectively, &ldquo;the Petitioners&rdquo;\)',
+                petitionerFormat3 = re.compile(r'proper\sform\sby\s(.+?)\s\(collectively, &ldquo;(?:\w{3}\s)\wetitioner(?:\w)?&rdquo;\)',
                                                flags=re.M)
+                if len(petitionerFormat3.findall(longwebContent)) != 0:
+                    initiation_petitioners = petitionerFormat3.findall(longwebContent)[0].split("and")
+                petitionerFormat4 = re.compile(r'on behalf of\s(.+?)\s\(collectively, (?:\w{3}\s)\wetitioner(?:\w)?\)',
+                    flags=re.M)
                 if len(petitionerFormat4.findall(longwebContent)) != 0:
                     initiation_petitioners = petitionerFormat4.findall(longwebContent)[0].split(",")
                 countries = []
@@ -548,9 +556,15 @@ def Countervailing(DOC, product):
                 initiation_df['FedReg'] = [initiation_FedReg] * len(countries)
                 initiation_df['AD/CVD'] = ['CVD'] * len(countries)
                 for i in range(len(initiation_petitioners)):
+                    # companyformat = re.compile(r'([A-Z])', flags=re.M)
+                    # company = companyformat.findall(initiation_petitioners[i])[1]
                     initiation_df['Petitioner' + str(i + 1)] = initiation_petitioners[i] * len(countries)
-                    initiation_df['Ptner' + str(i + 1) + 'AltNm'] = [''] * len(countries)
-                SOIformat = re.compile(r'Scope of\s(.+?)</h2>(.+?)<h2 id=', flags=re.M)
+                    altnameformat = re.compile(r'\((.+?)\)', flags=re.M)
+                    altname = ''
+                    if len(altnameformat.findall(initiation_petitioners[i])) > 0:
+                        altname = altnameformat.findall(initiation_petitioners[i])[0]
+                    initiation_df['Ptner' + str(i + 1) + 'AltNm'] = [altname] * len(countries)
+                SOIformat = re.compile(r'Scope of\s(.+?)</h\d>(.+?)<h\d id=', flags=re.M)
                 SOI = SOIformat.findall(longwebContent)[1][1]
                 if len(SOI) > 0:
                     HScodeFormate = re.compile(r'(\d{4}\.\d{2}\.\d{4})', flags=re.M)
@@ -635,7 +649,9 @@ def Countervailing(DOC, product):
                 firstcolumnname = activation_df.columns.tolist()[0]
                 lastcolumnname = activation_df.columns.tolist()[-1]
                 activation_df[lastcolumnname] = activation_df[lastcolumnname].astype(float, errors='ignore')
-                activation_df = activation_df[activation_df[lastcolumnname].apply(lambda x: tryfloat(x))]
+                if tryfloat(activation_df[lastcolumnname][0]):
+                    activation_df = activation_df[activation_df[lastcolumnname].apply(lambda x: tryfloat(x))]
+                    activation_df = activation_df.reset_index(drop=True)
 
                 if firstcolumnname == 'Country' or firstcolumnname == 'Countries':
                     secondcolumnname = activation_df.columns.tolist()[1]
@@ -643,24 +659,6 @@ def Countervailing(DOC, product):
                 else:
                     activation_df = activation_df.rename({firstcolumnname: 'Exporter'}, axis=1)
                     firstcolumnname = 'Exporter'
-                activation_df = activation_df.reset_index(drop=True)
-
-                len_of_act = len(activation_df)
-                # fill first column value
-                last = ''
-                firstcolumn = []
-                firstcolumnname = activation_df.columns.tolist()[0]
-                lastcolumnname = activation_df.columns.tolist()[-1]
-                activation_df[lastcolumnname] = activation_df[lastcolumnname].astype(float, errors='ignore')
-                activation_df = activation_df[activation_df[lastcolumnname].apply(lambda x: tryfloat(x))]
-
-                if firstcolumnname == 'Country' or firstcolumnname == 'Countries':
-                    secondcolumnname = activation_df.columns.tolist()[1]
-                    activation_df = activation_df.rename({secondcolumnname: 'Exporter'}, axis=1)
-                else:
-                    activation_df = activation_df.rename({firstcolumnname: 'Exporter'}, axis=1)
-                    firstcolumnname = 'Exporter'
-                activation_df = activation_df.reset_index(drop=True)
 
                 len_of_act = len(activation_df)
                 for i in range(len_of_act):
@@ -772,10 +770,15 @@ def Countervailing(DOC, product):
     combine_int_rest.to_csv(product + '_CVD.csv', index=False)
 
 
-Countervailing('C-580-869', 'Large Residential Washers')
+# Countervailing('C-580-869', 'Large Residential Washers')
 # Countervailing('C-570-025', 'Polyethylene Terephthalate Resin')
 # Countervailing('C-122-858', 'Softwood Lumber Products')
 # Countervailing('C-570-030', 'Cold-Rolled Steel Flat Products')
+# Countervailing('C-533-872', 'Finished Carbon Steel Flanges')
+# Countervailing('C-570-966', 'Drill Pipe')
+# Countervailing('C-570-948', 'Steel Grating')
+# Countervailing('C-570-953', 'Narrow Woven Ribbons With Woven Selvedge')
+# Countervailing('C-489-825', 'Heavy Walled Rectangular Welded Carbon Steel Pipes and Tubes')
 # iterating over each DOC Number
 
 # for index in range(0, len(DOCarray)):
