@@ -9,12 +9,12 @@ import numpy as np
 import lxml
 
 # get numpy array from csv file
-my_csv = pd.read_csv('Sample_overall.csv')
-column = my_csv['DOCNo']
-DOCarray = column[1:].values
+my_csv = pd.read_csv('revocationOverall.csv')
+column = my_csv['DOC case No.']
+DOCarray = column[0:].values
 productColumn = my_csv['Product']
 productArray = productColumn[1:].values
-all_countries = ['PRC','Afghanistan', 'Aland Islands', 'Albania', 'Algeria', 'American Samoa', 'Andorra', 'Angola', 'Anguilla', 'Antarctica', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Aruba', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bermuda', 'Bhutan', 'Bolivia, Plurinational State of', 'Bonaire, Sint Eustatius and Saba', 'Bosnia and Herzegovina', 'Botswana', 'Bouvet Island', 'Brazil', 'British Indian Ocean Territory', 'Brunei Darussalam', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Cape Verde', 'Cayman Islands', 'Central African Republic', 'Chad', 'Chile', 'China', 'Christmas Island', 'Cocos (Keeling) Islands', 'Colombia', 'Comoros', 'Congo', 'Congo, The Democratic Republic of the', 'Cook Islands', 'Costa Rica', "Côte d'Ivoire", 'Croatia', 'Cuba', 'Curaçao', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Ethiopia', 'Falkland Islands (Malvinas)', 'Faroe Islands', 'Fiji', 'Finland', 'France', 'French Guiana', 'French Polynesia', 'French Southern Territories', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Gibraltar', 'Greece', 'Greenland', 'Grenada', 'Guadeloupe', 'Guam', 'Guatemala', 'Guernsey', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Heard Island and McDonald Islands', 'Holy See (Vatican City State)', 'Honduras', 'Hong Kong', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran, Islamic Republic of', 'Iraq', 'Ireland', 'Isle of Man', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jersey', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', "Korea", 'Korea, Republic of', 'Kuwait', 'Kyrgyzstan', "Lao People's Democratic Republic", 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macao', 'Macedonia, Republic of', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Martinique', 'Mauritania', 'Mauritius', 'Mayotte', 'Mexico', 'Micronesia, Federated States of', 'Moldova, Republic of', 'Monaco', 'Mongolia', 'Montenegro', 'Montserrat', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Caledonia', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Niue', 'Norfolk Island', 'Northern Mariana Islands', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Palestinian Territory, Occupied', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Pitcairn', 'Poland', 'Portugal', 'Puerto Rico', 'Qatar', 'Réunion', 'Romania', 'Russian Federation', 'Rwanda', 'Saint Barthélemy', 'Saint Helena, Ascension and Tristan da Cunha', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Martin (French part)', 'Saint Pierre and Miquelon', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Sint Maarten (Dutch part)', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Georgia and the South Sandwich Islands', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'South Sudan', 'Svalbard and Jan Mayen', 'Swaziland', 'Sweden', 'Switzerland', 'Syrian Arab Republic', 'Taiwan, Province of China', 'Tajikistan', 'Tanzania, United Republic of', 'Thailand', 'Timor-Leste', 'Togo', 'Tokelau', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Turks and Caicos Islands', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'United States Minor Outlying Islands', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Venezuela, Bolivarian Republic of', 'Viet Nam', 'Virgin Islands, British', 'Virgin Islands, U.S.', 'Wallis and Futuna', 'Yemen', 'Zambia', 'Zimbabwe']
+all_countries = ['PRC','Afghanistan', 'Aland Islands', 'Albania', 'Algeria', 'American Samoa', 'Andorra', 'Angola', 'Anguilla', 'Antarctica', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Aruba', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bermuda', 'Bhutan', 'Bolivia, Plurinational State of', 'Bonaire, Sint Eustatius and Saba', 'Bosnia and Herzegovina', 'Botswana', 'Bouvet Island', 'Brazil', 'British Indian Ocean Territory', 'Brunei Darussalam', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Cape Verde', 'Cayman Islands', 'Central African Republic', 'Chad', 'Chile', 'China', 'Christmas Island', 'Cocos (Keeling) Islands', 'Colombia', 'Comoros', 'Congo', 'Congo, The Democratic Republic of the', 'Cook Islands', 'Costa Rica', "Côte d'Ivoire", 'Croatia', 'Cuba', 'Curaçao', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Ethiopia', 'Falkland Islands (Malvinas)', 'Faroe Islands', 'Fiji', 'Finland', 'France', 'French Guiana', 'French Polynesia', 'French Southern Territories', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Gibraltar', 'Greece', 'Greenland', 'Grenada', 'Guadeloupe', 'Guam', 'Guatemala', 'Guernsey', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Heard Island and McDonald Islands', 'Holy See (Vatican City State)', 'Honduras', 'Hong Kong', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran, Islamic Republic of', 'Iraq', 'Ireland', 'Isle of Man', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jersey', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', "Korea", 'Korea, Republic of', 'Kuwait', 'Kyrgyzstan', "Lao People's Democratic Republic", 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macao', 'Macedonia, Republic of', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Martinique', 'Mauritania', 'Mauritius', 'Mayotte', 'Mexico', 'Micronesia, Federated States of', 'Moldova, Republic of', 'Monaco', 'Mongolia', 'Montenegro', 'Montserrat', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Caledonia', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Niue', 'Norfolk Island', 'Northern Mariana Islands', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Palestinian Territory, Occupied', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Pitcairn', 'Poland', 'Portugal', 'Puerto Rico', 'Qatar', 'Réunion', 'Romania', 'Russian Federation', 'Rwanda', 'Saint Barthélemy', 'Saint Helena, Ascension and Tristan da Cunha', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Martin (French part)', 'Saint Pierre and Miquelon', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Sint Maarten (Dutch part)', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Georgia and the South Sandwich Islands', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'South Sudan', 'Svalbard and Jan Mayen', 'Swaziland', 'Sweden', 'Switzerland', 'Syrian Arab Republic', 'Taiwan, Province of China', 'Tajikistan', 'Tanzania, United Republic of', 'Thailand', 'Timor-Leste', 'Togo', 'Tokelau', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Turks and Caicos Islands', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'United States Minor Outlying Islands', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Venezuela', 'Viet Nam', 'Virgin Islands, British', 'Virgin Islands, U.S.', 'Wallis and Futuna', 'Yemen', 'Zambia', 'Zimbabwe']
 
 def tryfloat(x):
     try:
@@ -22,6 +22,18 @@ def tryfloat(x):
         return True
     except ValueError:
         return False
+
+def startprint(x):
+    if 'Start Print' in x:
+        return False
+    else:
+        return True
+
+def iscountry(x):
+    if x in all_countries:
+        return False
+    else:
+        return True
 
 def AntiDumping(DOC, product):
     # get the website link, read content from it
@@ -95,14 +107,17 @@ def AntiDumping(DOC, product):
                 FedRegFormat = re.compile(r'document-citation.+(\d{2}\s[A-Z]{2}\s\d{4,5})\\n', flags=re.M)
                 revocation_FedReg = FedRegFormat.findall(longwebContent)[0]
                 revocation_df['Country'] = countries
-                revocation_df['Action'] = [revocation_action]
-                revocation_df['Year'] = [revocation_year]
-                revocation_df['Month'] = [revocation_month]
-                revocation_df['Date'] = [revocation_date]
-                revocation_df['FedReg'] = [revocation_FedReg]
-                revocation_df['AD/CVD'] = ['AD']
-                SOIformat = re.compile(r'Scope of\s(.+?)</h2>(.+?)<h2 id=', flags=re.M)
-                SOI = SOIformat.findall(longwebContent)[1][1]
+                revocation_df['Action'] = [revocation_action] * len(countries)
+                revocation_df['Year'] = [revocation_year] * len(countries)
+                revocation_df['Month'] = [revocation_month] * len(countries)
+                revocation_df['Date'] = [revocation_date] * len(countries)
+                revocation_df['FedReg'] = [revocation_FedReg] * len(countries)
+                revocation_df['AD/CVD'] = ['AD'] * len(countries)
+                SOIformat = re.compile(r'Scope of\s(.+?)</h\d>(.+?)<h\d id=', flags=re.M)
+                try:
+                    SOI = SOIformat.findall(longwebContent)[1][1]
+                except IndexError:
+                    SOI = longwebContent
                 if len(SOI) > 0:
                     HScodeFormate = re.compile(r'(\d{4}\.\d{2}\.\d{4})', flags=re.M)
                     revocation_HScodeList = list(HScodeFormate.findall(SOI))
@@ -111,26 +126,24 @@ def AntiDumping(DOC, product):
                         revocation_HScodeList = list(HScodeFormate.findall(SOI))
                     if len(revocation_HScodeList) == 5:
                         for i in range(0, len(revocation_HScodeList)):
-                            revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i]]
+                            revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i]] * len(countries)
                     # todo: probably fix the order
                     if len(revocation_HScodeList) == 6:
                         for i in range(0, len(revocation_HScodeList) + 1):
                             if i < 2:
-                                revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i]]
+                                revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i]] * len(countries)
                             if i == 2:
-                                revocation_df['HS' + str(i + 1)] = ''
+                                revocation_df['HS' + str(i + 1)] = [''] * len(countries)
                             if i > 2:
-                                revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i - 1]]
+                                revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i - 1]] * len(countries)
                     if len(revocation_HScodeList) < 5 or len(revocation_HScodeList) > 6:
                         print('irregular HScode')
                         for i in range(0, len(revocation_HScodeList)):
-                            revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i]]
+                            revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i]] * len(countries)
                     HSREVLIST = len(revocation_HScodeList)
 
-                revocation_df['Source'] = [revocation_source]
+                revocation_df['Source'] = [revocation_source] * len(countries)
 
-            if 'Review' in title:
-                continue;
             if 'Preliminary' in title:
                 continue;
             if 'Corrected Notice' in title:
@@ -151,20 +164,21 @@ def AntiDumping(DOC, product):
                 FedRegFormat = re.compile(r'document-citation.+(\d{2}\s[A-Z]{2}\s\d{4,5})\\n', flags=re.M)
                 initiation_FedReg = FedRegFormat.findall(longwebContent)[0]
                 initiation_petitioners = []
-                petitionerFormat1 = re.compile(r'proper\sform\sby\s(.+)\s\(“(?:\w{3}\s)\wetitioner(?:\w)?”\)', flags=re.M)
+                petitionerFormat1 = re.compile(r'proper\sform\sby\s(.+)\s\((?:collectively,?\s)?“(?:\w{3}\s)\wetitioner(?:\w)?”\)', flags=re.M)
                 if len(petitionerFormat1.findall(longwebContent)) != 0:
                     initiation_petitioners.append(petitionerFormat1.findall(longwebContent)[0])
-                petitionerFormat2 = re.compile(r'proper\sform\sby\s(.+?)\s\(&ldquo;(?:\w{3}\s)\wetitioner(?:\w)?&rdquo;\)', flags=re.M)
-                if len(petitionerFormat2.findall(longwebContent)) != 0:
-                    initiation_petitioners.append(petitionerFormat2.findall(longwebContent)[0])
-                petitionerFormat3 = re.compile(r'proper\sform\sby\s(.+?)\s\(collectively, &ldquo;(?:\w{3}\s)\wetitioner(?:\w)?&rdquo;\)',
+                petitionerFormat3 = re.compile(r'proper\sform\sby\s(.+?)\s\((?:collectively,?\s)?&ldquo;(?:\w{3}\s)?\wetitioner(?:\w)?&rdquo;\)',
                                                flags=re.M)
                 if len(petitionerFormat3.findall(longwebContent)) != 0:
-                    initiation_petitioners = petitionerFormat3.findall(longwebContent)[0].split("and")
-                petitionerFormat4 = re.compile(r'on behalf of\s(.+?)\s\(collectively, (?:\w{3}\s)\wetitioner(?:\w)?\)',
+                    initiation_petitioners = petitionerFormat3.findall(longwebContent)[0].split(",")
+                petitionerFormat4 = re.compile(r'on behalf of\s(.+?)\s\((?:collectively,?\s)?(?:\w{3}\s)?\wetitioner(?:\w)?\)',
                     flags=re.M)
                 if len(petitionerFormat4.findall(longwebContent)) != 0:
                     initiation_petitioners = petitionerFormat4.findall(longwebContent)[0].split(",")
+                petitionerFormat5 = re.compile(r'proper\sform\sby\s(.+?)\s\((?:collectively,?\s)?(?:\w{3}\s)?\wetitioner(?:\w)?\)',
+                                               flags=re.M)
+                if len(petitionerFormat5.findall(longwebContent)) != 0:
+                    initiation_petitioners = petitionerFormat5.findall(longwebContent)[0].split(",")
                 countries = []
                 for c in all_countries:
                     # check if Country is in TXT
@@ -177,15 +191,21 @@ def AntiDumping(DOC, product):
                 initiation_df['Date'] = [initiation_date] * len(countries)
                 initiation_df['FedReg'] = [initiation_FedReg] * len(countries)
                 initiation_df['AD/CVD'] = ['AD'] * len(countries)
-                for i in range(len(initiation_petitioners)):
-                    initiation_df['Petitioner' + str(i + 1)] = initiation_petitioners[i] * len(countries)
-                    altnameformat = re.compile(r'\((.+?)\)', flags=re.M)
-                    altname = ''
-                    if len(altnameformat.findall(initiation_petitioners[i])) > 0:
-                        altname = altnameformat.findall(initiation_petitioners[i])[0]
-                    initiation_df['Ptner' + str(i + 1) + 'AltNm'] = [altname] * len(countries)
+                if len(initiation_petitioners) == 0:
+                    initiation_df['???Petitioner'] = ['']*len(countries)
+                else:
+                    for i in range(len(initiation_petitioners)):
+                        initiation_df['Petitioner' + str(i + 1)] = initiation_petitioners[i] * len(countries)
+                        altnameformat = re.compile(r'\((.+?)\)', flags=re.M)
+                        altname = ''
+                        if len(altnameformat.findall(initiation_petitioners[i])) > 0:
+                            altname = altnameformat.findall(initiation_petitioners[i])[0]
+                        initiation_df['Ptner' + str(i + 1) + 'AltNm'] = [altname] * len(countries)
                 SOIformat = re.compile(r'Scope of\s(.+?)</h\d>(.+?)<h\d id=', flags=re.M)
-                SOI = SOIformat.findall(longwebContent)[1][1]
+                try:
+                    SOI = SOIformat.findall(longwebContent)[1][1]
+                except IndexError:
+                    SOI = longwebContent
                 if len(SOI) > 0:
                     HScodeFormate = re.compile(r'(\d{4}\.\d{2}\.\d{4})', flags=re.M)
                     initiation_HScodeList = list(HScodeFormate.findall(SOI))
@@ -194,25 +214,27 @@ def AntiDumping(DOC, product):
                         initiation_HScodeList = list(HScodeFormate.findall(SOI))
                     if len(initiation_HScodeList) == 5:
                         for i in range(0, len(initiation_HScodeList)):
-                            initiation_df['HS' + str(i + 1)] = [initiation_HScodeList[i]] * len(countries)
+                            initiation_df['HS' + str(i + 1)] = [initiation_HScodeList[i]]
+                    # todo: probably fix the order
                     if len(initiation_HScodeList) == 6:
-                        initiation_df['HS' + '3'] = ''
                         for i in range(0, len(initiation_HScodeList) + 1):
                             if i < 2:
-                                initiation_df['HS' + str(i + 1)] = [initiation_HScodeList[i]] * len(countries)
+                                initiation_df['HS' + str(i + 1)] = [initiation_HScodeList[i]]* len(countries)
                             if i == 2:
-                                initiation_df['HS' + str(i + 1)] = ''
+                                initiation_df['HS' + str(i + 1)] = [''] * len(countries)
                             if i > 2:
-                                initiation_df['HS' + str(i + 1)] = [initiation_HScodeList[i - 1]] * len(countries)
+                                initiation_df['HS' + str(i + 1)] = [initiation_HScodeList[i - 1]]* len(countries)
                     if len(initiation_HScodeList) < 5 or len(initiation_HScodeList) > 6:
                         print('irregular HScode')
                         for i in range(0, len(initiation_HScodeList)):
-                            initiation_df['HS' + str(i + 1)] = [initiation_HScodeList[i]] * len(countries)
+                            initiation_df['HS' + str(i + 1)] = [initiation_HScodeList[i]]* len(countries)
                     HSINILIST = len(initiation_HScodeList)
                 initiation_df['Source'] = [initiation_source] * len(countries)
 
             if 'Antidumping Duty Order' in title and 'Continuation' not in title and 'Pursuant to Court' not in title:
                 if 'Correction for' in title:
+                    continue
+                if 'Revocation' in title:
                     continue
                 print('START ' + title)
                 print(link)
@@ -265,10 +287,14 @@ def AntiDumping(DOC, product):
                 firstcolumn = []
                 firstcolumnname = activation_df.columns.tolist()[0]
                 lastcolumnname = activation_df.columns.tolist()[-1]
-                activation_df[lastcolumnname] = activation_df[lastcolumnname].astype(float, errors='ignore')
-                if tryfloat(activation_df[lastcolumnname][0]) and tryfloat(activation_df[lastcolumnname][1]):
-                    activation_df = activation_df[activation_df[lastcolumnname].apply(lambda x: tryfloat(x))]
-                    activation_df = activation_df.reset_index(drop=True)
+                activation_df[lastcolumnname] = activation_df[lastcolumnname].astype(str, errors='ignore')
+                activation_df = activation_df[activation_df[lastcolumnname].apply(lambda x: startprint(x))]
+                activation_df = activation_df.reset_index(drop=True)
+                # activation_df[lastcolumnname] = activation_df[lastcolumnname].astype(float, errors='ignore')
+                # if tryfloat(activation_df[lastcolumnname][0]) and tryfloat(activation_df[lastcolumnname][1]):
+                #     activation_df = activation_df[activation_df[lastcolumnname].apply(lambda x: tryfloat(x))]
+                #     activation_df = activation_df.reset_index(drop=True)
+                countriesInTable = False
 
                 if firstcolumnname == 'Country' or firstcolumnname == 'Countries':
                     secondcolumnname = activation_df.columns.tolist()[1]
@@ -276,8 +302,20 @@ def AntiDumping(DOC, product):
                 else:
                     activation_df = activation_df.rename({firstcolumnname: 'Exporter'}, axis=1)
                     firstcolumnname = 'Exporter'
+                    if activation_df[firstcolumnname][0] in all_countries:
+                        countriesInTable = True
 
                 len_of_act = len(activation_df)
+                if countriesInTable:
+                    countries = []
+                    for i in range(len_of_act):
+                        curr = activation_df[firstcolumnname][i]
+                        if curr in all_countries:
+                            last = curr
+                            countries.append(curr)
+                        else:
+                            countries.append(last)
+                    activation_df['Country'] = countries
                 for i in range(len_of_act):
                     curr = activation_df[firstcolumnname][i]
                     if isinstance(curr, str):
@@ -286,6 +324,10 @@ def AntiDumping(DOC, product):
                     else:
                         firstcolumn.append(last)
                 activation_df[firstcolumnname] = firstcolumn
+                if countriesInTable:
+                    activation_df = activation_df[activation_df[firstcolumnname].apply(lambda x: iscountry(x))]
+                    activation_df = activation_df.reset_index(drop=True)
+                    len_of_act = len(activation_df)
                 if 'Country' not in activation_df.columns.tolist():
                     countries = []
                     for c in all_countries:
@@ -303,9 +345,11 @@ def AntiDumping(DOC, product):
                 activation_df['FedReg'] = [activation_FedReg] * len_of_act
                 activation_df['AD/CVD'] = ['AD'] * len_of_act
                 activation_df['Action'] = [activation_action] * len_of_act
-
                 SOIformat = re.compile(r'Scope of\s(.+?)</h\d{1}>(.+?)<h\d{1} id=', flags=re.M)
-                SOI = SOIformat.findall(longwebContent)[1][1]
+                try:
+                    SOI = SOIformat.findall(longwebContent)[1][1]
+                except IndexError:
+                    SOI = longwebContent
                 if len(SOI) > 0:
                     HScodeFormate = re.compile(r'(\d{4}\.\d{2}\.\d{4})', flags=re.M)
                     activation_HScodeList = list(HScodeFormate.findall(SOI))
@@ -314,28 +358,32 @@ def AntiDumping(DOC, product):
                         activation_HScodeList = list(HScodeFormate.findall(SOI))
                     if len(activation_HScodeList) == 5:
                         for i in range(0, len(activation_HScodeList)):
-                            activation_df['HS' + str(i + 1)] = [activation_HScodeList[i]] * len_of_act
+                            activation_df['HS' + str(i + 1)] = [activation_HScodeList[i]]* len_of_act
+                    # todo: probably fix the order
                     if len(activation_HScodeList) == 6:
-                        activation_df['HS' + '3'] = ''
                         for i in range(0, len(activation_HScodeList) + 1):
                             if i < 2:
-                                activation_df['HS' + str(i + 1)] = [activation_HScodeList[i]] * len_of_act
+                                activation_df['HS' + str(i + 1)] = [activation_HScodeList[i]]* len_of_act
                             if i == 2:
-                                activation_df['HS' + str(i + 1)] = ''
+                                activation_df['HS' + str(i + 1)] = [''] * len_of_act
                             if i > 2:
-                                activation_df['HS' + str(i + 1)] = [activation_HScodeList[i - 1]] * len_of_act
+                                activation_df['HS' + str(i + 1)] = [activation_HScodeList[i - 1]]* len_of_act
                     if len(activation_HScodeList) < 5 or len(activation_HScodeList) > 6:
                         print('irregular HScode')
                         for i in range(0, len(activation_HScodeList)):
-                            activation_df['HS' + str(i + 1)] = [activation_HScodeList[i]] * len_of_act
+                            activation_df['HS' + str(i + 1)] = [activation_HScodeList[i]]* len_of_act
                     HSACTLIST = len(activation_HScodeList)
                 activation_df['Source'] = [activation_source] * len_of_act
 
 
     # special for initiation: petitioners
     # special for activation: "Dumping margin","Cash deposit (%)", "Exporter"
-    if len(initiation) == 0 or len(activation) == 0:
-        print('take a look! we do not have initiation or activation in this product?')
+    if activation_df.empty:
+        print('take a look! we do not have activation in this product?')
+        if not initiation_df.empty:
+            initiation_df['??? no activation'] = [''] * len(initiation_df)
+            initiation_df.to_csv(product + '_AD.csv', index=False)
+            return
     if len(initiation) != 0:
         Petitioner_column = [col for col in initiation_df.columns if 'Petitioner' in col or 'Ptner' in col]
         Petitioner_column.append("Country")
@@ -355,8 +403,6 @@ def AntiDumping(DOC, product):
     if len(revocation) != 0:
         combine_act_rev_list = ["FedReg", "Country", "Exporter", "Producer", "Year",
                                 "Month", "Date", "AD/CVD", "Action", "Source"]
-        # if "Dumping margin" in revocation_df:
-        #     combine_act_rev_list.append("Dumping margin")
         for eachHS in range(min(HSREVLIST, HSACTLIST)):
             combine_act_rev_list.append("HS" + str(eachHS + 1))
         if len(initiation) != 0:
@@ -370,14 +416,15 @@ def AntiDumping(DOC, product):
         combine_act_rev = combine_act_rev.sort_values('Year')
         cols = list(combine_act_rev.columns.values)
         cols.pop(cols.index('Source'))
-        combine_int_rest = combine_act_rev[cols + ['Source']]
+        combine_act_rev = combine_act_rev[cols + ['Source']]
+        combine_act_rev['no init'] = ['no init']* len(combine_act_rev)
         combine_act_rev.to_csv(product + '_AD.csv', index=False)
         return
 
     combine_column = ["Country", "FedReg", "Year", "Month", "Date", "AD/CVD", "Action", "Exporter", "Producer", "Source"]
     for i in Petitioner_column:
         combine_column.append(i)
-    for eachHS in range(min(HSINILIST, HSREVLIST, HSACTLIST)):
+    for eachHS in range(min(HSINILIST, HSACTLIST, HSREVLIST)):
         combine_column.append("HS" + str(eachHS + 1))
     combine_int_rest = initiation_df.merge(combine_act_rev, on=list(combine_column), how='outer')
     combine_int_rest = combine_int_rest.sort_values('Year')
@@ -386,14 +433,6 @@ def AntiDumping(DOC, product):
     combine_int_rest = combine_int_rest[cols + ['Source']]
     combine_int_rest.to_csv(product + '_AD.csv', index=False)
 
-# AntiDumping('A-580-855', 'Diamond Sawblades')  # have all 3 phase, 2 table in action
-# AntiDumping('A-201-842', 'Large Residential Washers')  # first example
-# AntiDumping('A-580-850', 'Polyvinyl Alcohol')
-# AntiDumping('A-570-979', 'Crystalline Silicon Photovoltaic Cells')
-# AntiDumping('A-201-828', 'Welded Large Diameter Line Pipes') # cannot do this, missing DOC number
-# AntiDumping('A-437-804', 'Sulfanilic Acid') # irregular format of the table, revocation with FA
-AntiDumping('A-307-820', 'Silicomanganese')
-# AntiDumping('A-570-890', 'Wooden Bedroom Furniture')
 
 def Countervailing(DOC, product):
     # get the website link, read content from it
@@ -471,14 +510,17 @@ def Countervailing(DOC, product):
                 FedRegFormat = re.compile(r'document-citation.+(\d{2}\s[A-Z]{2}\s\d{4,5})\\n', flags=re.M)
                 revocation_FedReg = FedRegFormat.findall(longwebContent)[0]
                 revocation_df['Country'] = countries
-                revocation_df['Action'] = [revocation_action]
-                revocation_df['Year'] = [revocation_year]
-                revocation_df['Month'] = [revocation_month]
-                revocation_df['Date'] = [revocation_date]
-                revocation_df['FedReg'] = [revocation_FedReg]
-                revocation_df['AD/CVD'] = ['CVD']
+                revocation_df['Action'] = [revocation_action] * len(countries)
+                revocation_df['Year'] = [revocation_year] * len(countries)
+                revocation_df['Month'] = [revocation_month] * len(countries)
+                revocation_df['Date'] = [revocation_date] * len(countries)
+                revocation_df['FedReg'] = [revocation_FedReg] * len(countries)
+                revocation_df['AD/CVD'] = ['CVD'] * len(countries)
                 SOIformat = re.compile(r'Scope of\s(.+?)</h\d>(.+?)<h\d id=', flags=re.M)
-                SOI = SOIformat.findall(longwebContent)[1][1]
+                try:
+                    SOI = SOIformat.findall(longwebContent)[1][1]
+                except IndexError:
+                    SOI = longwebContent
                 if len(SOI) > 0:
                     HScodeFormate = re.compile(r'(\d{4}\.\d{2}\.\d{4})', flags=re.M)
                     revocation_HScodeList = list(HScodeFormate.findall(SOI))
@@ -487,23 +529,23 @@ def Countervailing(DOC, product):
                         revocation_HScodeList = list(HScodeFormate.findall(SOI))
                     if len(revocation_HScodeList) == 5:
                         for i in range(0, len(revocation_HScodeList)):
-                            revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i]]
+                            revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i]] * len(countries)
                     # todo: probably fix the order
                     if len(revocation_HScodeList) == 6:
                         for i in range(0, len(revocation_HScodeList) + 1):
                             if i < 2:
-                                revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i]]
+                                revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i]] * len(countries)
                             if i == 2:
-                                revocation_df['HS' + str(i + 1)] = ''
+                                revocation_df['HS' + str(i + 1)] = [''] * len(countries)
                             if i > 2:
-                                revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i - 1]]
+                                revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i - 1]] * len(countries)
                     if len(revocation_HScodeList) < 5 or len(revocation_HScodeList) > 6:
                         print('irregular HScode')
                         for i in range(0, len(revocation_HScodeList)):
-                            revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i]]
+                            revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i]] * len(countries)
                     HSREVLIST = len(revocation_HScodeList)
 
-                revocation_df['Source'] = [revocation_source]
+                revocation_df['Source'] = [revocation_source] * len(countries)
 
             if 'Review' in title:
                 continue;
@@ -532,17 +574,18 @@ def Countervailing(DOC, product):
                 petitionerFormat1 = re.compile(r'proper\sform\sby\s(.+)\s\(“(?:\w{3}\s)\wetitioner(?:\w)?”\)', flags=re.M)
                 if len(petitionerFormat1.findall(longwebContent)) != 0:
                     initiation_petitioners.append(petitionerFormat1.findall(longwebContent)[0])
-                petitionerFormat2 = re.compile(r'proper\sform\sby\s(.+?)\s\(&ldquo;(?:\w{3}\s)\wetitioner(?:\w)?&rdquo;\)', flags=re.M)
-                if len(petitionerFormat2.findall(longwebContent)) != 0:
-                    initiation_petitioners.append(petitionerFormat2.findall(longwebContent)[0])
-                petitionerFormat3 = re.compile(r'proper\sform\sby\s(.+?)\s\(collectively, &ldquo;(?:\w{3}\s)\wetitioner(?:\w)?&rdquo;\)',
+                petitionerFormat3 = re.compile(r'proper\sform\sby\s(.+?)\s\((?:collectively\d?\s)?&ldquo;(?:\w{3}\s)?\wetitioner(?:\w)?&rdquo;\)',
                                                flags=re.M)
                 if len(petitionerFormat3.findall(longwebContent)) != 0:
-                    initiation_petitioners = petitionerFormat3.findall(longwebContent)[0].split("and")
-                petitionerFormat4 = re.compile(r'on behalf of\s(.+?)\s\(collectively, (?:\w{3}\s)\wetitioner(?:\w)?\)',
+                    initiation_petitioners = petitionerFormat3.findall(longwebContent)[0].split(",")
+                petitionerFormat4 = re.compile(r'on behalf of\s(.+?)\s\((?:collectively\d?\s)?(?:\w{3}\s)?\wetitioner(?:\w)?\)',
                     flags=re.M)
                 if len(petitionerFormat4.findall(longwebContent)) != 0:
                     initiation_petitioners = petitionerFormat4.findall(longwebContent)[0].split(",")
+                petitionerFormat5 = re.compile(r'proper\sform\sby\s(.+?)\s\((?:collectively\d?\s)?(?:\w{3}\s)?\wetitioner(?:\w)?\)',
+                                               flags=re.M)
+                if len(petitionerFormat5.findall(longwebContent)) != 0:
+                    initiation_petitioners = petitionerFormat5.findall(longwebContent)[0].split(",")
                 countries = []
                 for c in all_countries:
                     # check if Country is in TXT
@@ -555,17 +598,21 @@ def Countervailing(DOC, product):
                 initiation_df['Date'] = [initiation_date] * len(countries)
                 initiation_df['FedReg'] = [initiation_FedReg] * len(countries)
                 initiation_df['AD/CVD'] = ['CVD'] * len(countries)
-                for i in range(len(initiation_petitioners)):
-                    # companyformat = re.compile(r'([A-Z])', flags=re.M)
-                    # company = companyformat.findall(initiation_petitioners[i])[1]
-                    initiation_df['Petitioner' + str(i + 1)] = initiation_petitioners[i] * len(countries)
-                    altnameformat = re.compile(r'\((.+?)\)', flags=re.M)
-                    altname = ''
-                    if len(altnameformat.findall(initiation_petitioners[i])) > 0:
-                        altname = altnameformat.findall(initiation_petitioners[i])[0]
-                    initiation_df['Ptner' + str(i + 1) + 'AltNm'] = [altname] * len(countries)
+                if len(initiation_petitioners) == 0:
+                    initiation_df['???Petitioner'] = ['']*len(countries)
+                else:
+                    for i in range(len(initiation_petitioners)):
+                        initiation_df['Petitioner' + str(i + 1)] = initiation_petitioners[i] * len(countries)
+                        altnameformat = re.compile(r'\((.+?)\)', flags=re.M)
+                        altname = ''
+                        if len(altnameformat.findall(initiation_petitioners[i])) > 0:
+                            altname = altnameformat.findall(initiation_petitioners[i])[0]
+                        initiation_df['Ptner' + str(i + 1) + 'AltNm'] = [altname] * len(countries)
                 SOIformat = re.compile(r'Scope of\s(.+?)</h\d>(.+?)<h\d id=', flags=re.M)
-                SOI = SOIformat.findall(longwebContent)[1][1]
+                try:
+                    SOI = SOIformat.findall(longwebContent)[1][1]
+                except IndexError:
+                    SOI = longwebContent
                 if len(SOI) > 0:
                     HScodeFormate = re.compile(r'(\d{4}\.\d{2}\.\d{4})', flags=re.M)
                     initiation_HScodeList = list(HScodeFormate.findall(SOI))
@@ -574,21 +621,21 @@ def Countervailing(DOC, product):
                         initiation_HScodeList = list(HScodeFormate.findall(SOI))
                     if len(initiation_HScodeList) == 5:
                         for i in range(0, len(initiation_HScodeList)):
-                            initiation_df['HS' + str(i + 1)] = [initiation_HScodeList[i]] * len(countries)
+                            initiation_df['HS' + str(i + 1)] = [initiation_HScodeList[i]]
+                    # todo: probably fix the order
                     if len(initiation_HScodeList) == 6:
-                        initiation_df['HS' + '3'] = ''
                         for i in range(0, len(initiation_HScodeList) + 1):
                             if i < 2:
-                                initiation_df['HS' + str(i + 1)] = [initiation_HScodeList[i]] * len(countries)
+                                initiation_df['HS' + str(i + 1)] = [initiation_HScodeList[i]]* len(countries)
                             if i == 2:
-                                initiation_df['HS' + str(i + 1)] = ''
+                                initiation_df['HS' + str(i + 1)] = [''] * len(countries)
                             if i > 2:
-                                initiation_df['HS' + str(i + 1)] = [initiation_HScodeList[i - 1]] * len(countries)
+                                initiation_df['HS' + str(i + 1)] = [initiation_HScodeList[i - 1]]* len(countries)
                     if len(initiation_HScodeList) < 5 or len(initiation_HScodeList) > 6:
                         print('irregular HScode')
                         for i in range(0, len(initiation_HScodeList)):
-                            initiation_df['HS' + str(i + 1)] = [initiation_HScodeList[i]] * len(countries)
-                    HSINILIST = len(initiation_HScodeList)
+                            initiation_df['HS' + str(i + 1)] = [initiation_HScodeList[i]]* len(countries)
+                    HSINTLIST = len(initiation_HScodeList)
                 initiation_df['Source'] = [initiation_source] * len(countries)
 
             if 'Affirmative Final Determination' in title:
@@ -642,16 +689,14 @@ def Countervailing(DOC, product):
 
                     activation_df = activation_df.append(df_list[-2], ignore_index=True)
 
-
             # fill first column value
                 last = ''
                 firstcolumn = []
                 firstcolumnname = activation_df.columns.tolist()[0]
                 lastcolumnname = activation_df.columns.tolist()[-1]
-                activation_df[lastcolumnname] = activation_df[lastcolumnname].astype(float, errors='ignore')
-                if tryfloat(activation_df[lastcolumnname][0]):
-                    activation_df = activation_df[activation_df[lastcolumnname].apply(lambda x: tryfloat(x))]
-                    activation_df = activation_df.reset_index(drop=True)
+                activation_df[lastcolumnname] = activation_df[lastcolumnname].astype(str, errors='ignore')
+                activation_df = activation_df[activation_df[lastcolumnname].apply(lambda x: startprint(x))]
+                activation_df = activation_df.reset_index(drop=True)
 
                 if firstcolumnname == 'Country' or firstcolumnname == 'Countries':
                     secondcolumnname = activation_df.columns.tolist()[1]
@@ -659,8 +704,20 @@ def Countervailing(DOC, product):
                 else:
                     activation_df = activation_df.rename({firstcolumnname: 'Exporter'}, axis=1)
                     firstcolumnname = 'Exporter'
+                    if activation_df[firstcolumnname][0] in all_countries:
+                        countriesInTable = True
 
                 len_of_act = len(activation_df)
+                if countriesInTable:
+                    countries = []
+                    for i in range(len_of_act):
+                        curr = activation_df[firstcolumnname][i]
+                        if curr in all_countries:
+                            last = curr
+                            countries.append(curr)
+                        else:
+                            countries.append(last)
+                    activation_df['Country'] = countries
                 for i in range(len_of_act):
                     curr = activation_df[firstcolumnname][i]
                     if isinstance(curr, str):
@@ -669,6 +726,10 @@ def Countervailing(DOC, product):
                     else:
                         firstcolumn.append(last)
                 activation_df[firstcolumnname] = firstcolumn
+                if countriesInTable:
+                    activation_df = activation_df[activation_df[firstcolumnname].apply(lambda x: iscountry(x))]
+                    activation_df = activation_df.reset_index(drop=True)
+                    len_of_act = len(activation_df)
                 if 'Country' not in activation_df.columns.tolist():
                     countries = []
                     for c in all_countries:
@@ -687,7 +748,10 @@ def Countervailing(DOC, product):
                 activation_df['AD/CVD'] = ['CVD'] * len_of_act
                 activation_df['Action'] = [activation_action] * len_of_act
                 SOIformat = re.compile(r'Scope of\s(.+?)</h\d{1}>(.+?)<h\d{1} id=', flags=re.M)
-                SOI = SOIformat.findall(longwebContent)[1][1]
+                try:
+                    SOI = SOIformat.findall(longwebContent)[1][1]
+                except IndexError:
+                    SOI = longwebContent
                 if len(SOI) > 0:
                     HScodeFormate = re.compile(r'(\d{4}\.\d{2}\.\d{4})', flags=re.M)
                     activation_HScodeList = list(HScodeFormate.findall(SOI))
@@ -696,28 +760,32 @@ def Countervailing(DOC, product):
                         activation_HScodeList = list(HScodeFormate.findall(SOI))
                     if len(activation_HScodeList) == 5:
                         for i in range(0, len(activation_HScodeList)):
-                            activation_df['HS' + str(i + 1)] = [activation_HScodeList[i]] * len_of_act
+                            activation_df['HS' + str(i + 1)] = [activation_HScodeList[i]]* len_of_act
+                    # todo: probably fix the order
                     if len(activation_HScodeList) == 6:
-                        activation_df['HS' + '3'] = ''
                         for i in range(0, len(activation_HScodeList) + 1):
                             if i < 2:
-                                activation_df['HS' + str(i + 1)] = [activation_HScodeList[i]] * len_of_act
+                                activation_df['HS' + str(i + 1)] = [activation_HScodeList[i]]* len_of_act
                             if i == 2:
-                                activation_df['HS' + str(i + 1)] = ''
+                                activation_df['HS' + str(i + 1)] = [''] * len_of_act
                             if i > 2:
-                                activation_df['HS' + str(i + 1)] = [activation_HScodeList[i - 1]] * len_of_act
+                                activation_df['HS' + str(i + 1)] = [activation_HScodeList[i - 1]]* len_of_act
                     if len(activation_HScodeList) < 5 or len(activation_HScodeList) > 6:
                         print('irregular HScode')
                         for i in range(0, len(activation_HScodeList)):
-                            activation_df['HS' + str(i + 1)] = [activation_HScodeList[i]] * len_of_act
+                            activation_df['HS' + str(i + 1)] = [activation_HScodeList[i]]* len_of_act
                     HSACTLIST = len(activation_HScodeList)
                 activation_df['Source'] = [activation_source] * len_of_act
 
 
     # special for initiation: petitioners
     # special for activation: "Dumping margin","Cash deposit (%)", "Exporter"
-    if len(initiation) == 0 or len(activation) == 0:
-        print('take a look! we do not have initiation or activation in this product?')
+    if activation_df.empty:
+        print('take a look! we do not have activation in this product?')
+        if not initiation_df.empty:
+            initiation_df['??? no activation'] = [''] * len(initiation_df)
+            initiation_df.to_csv(product + '_AD.csv', index=False)
+            return
     if len(initiation) != 0:
         Petitioner_column = [col for col in initiation_df.columns if 'Petitioner' in col or 'Ptner' in col]
         Petitioner_column.append("Country")
@@ -737,8 +805,6 @@ def Countervailing(DOC, product):
     if len(revocation) != 0:
         combine_act_rev_list = ["FedReg", "Country", "Exporter", "Producer", "Year",
                                 "Month", "Date", "AD/CVD", "Action", "Source"]
-        # if "Dumping margin" in revocation_df:
-        #     combine_act_rev_list.append("Dumping margin")
         for eachHS in range(min(HSREVLIST, HSACTLIST)):
             combine_act_rev_list.append("HS" + str(eachHS + 1))
         if len(initiation) != 0:
@@ -752,15 +818,16 @@ def Countervailing(DOC, product):
         combine_act_rev = combine_act_rev.sort_values('Year')
         cols = list(combine_act_rev.columns.values)
         cols.pop(cols.index('Source'))
-        combine_int_rest = combine_act_rev[cols + ['Source']]
-        combine_act_rev.to_csv(product + '_AD.csv', index=False)
+        combine_act_rev = combine_act_rev[cols + ['Source']]
+        combine_act_rev['no init'] = ['no init']* len(combine_act_rev)
+        combine_act_rev.to_csv(product + '_CVD.csv', index=False)
         return
 
     combine_column = ["Country", "FedReg", "Year", "Month", "Date", "AD/CVD", "Action", "Exporter", "Producer",
                       "Source"]
     for i in Petitioner_column:
         combine_column.append(i)
-    for eachHS in range(min(HSINILIST, HSREVLIST, HSACTLIST)):
+    for eachHS in range(min(HSINILIST, HSACTLIST)):
         combine_column.append("HS" + str(eachHS + 1))
     combine_int_rest = initiation_df.merge(combine_act_rev, on=list(combine_column), how='outer')
     combine_int_rest = combine_int_rest.sort_values('Year')
@@ -769,6 +836,30 @@ def Countervailing(DOC, product):
     combine_int_rest = combine_int_rest[cols + ['Source']]
     combine_int_rest.to_csv(product + '_CVD.csv', index=False)
 
+
+# iterating over each DOC Number
+
+for index in range(0, len(DOCarray)):
+    # get the type: AD/CVD -- first char in a string
+    type = DOCarray[index][0]
+    if (type == 'A'):
+        AntiDumping(DOCarray[index], productArray[index])
+    elif (type == 'C'):
+        Countervailing(DOCarray[index], productArray[index])
+    else:
+        print(DOCarray[index])
+
+    # df = pd.read_csv("example.csv", header=None)
+    # df.to_csv("example.csv", header=["Letter", "Number", "Symbol"], index=False)
+
+# AntiDumping('A-580-855', 'Diamond Sawblades')  # have all 3 phase, 2 table in action
+# AntiDumping('A-201-842', 'Large Residential Washers')  # first example
+# AntiDumping('A-580-850', 'Polyvinyl Alcohol')
+# AntiDumping('A-570-979', 'Crystalline Silicon Photovoltaic Cells')
+# AntiDumping('A-201-828', 'Welded Large Diameter Line Pipes') # cannot do this, missing DOC number
+# AntiDumping('A-437-804', 'Sulfanilic Acid') # irregular format of the table, revocation with FA
+# AntiDumping('A-307-820', 'Silicomanganese')
+# AntiDumping('A-570-890', 'Wooden Bedroom Furniture')
 
 # Countervailing('C-580-869', 'Large Residential Washers')
 # Countervailing('C-570-025', 'Polyethylene Terephthalate Resin')
@@ -779,20 +870,6 @@ def Countervailing(DOC, product):
 # Countervailing('C-570-948', 'Steel Grating')
 # Countervailing('C-570-953', 'Narrow Woven Ribbons With Woven Selvedge')
 # Countervailing('C-489-825', 'Heavy Walled Rectangular Welded Carbon Steel Pipes and Tubes')
-# iterating over each DOC Number
-
-# for index in range(0, len(DOCarray)):
-#     # get the type: AD/CVD -- first char in a string
-#     type = DOCarray[index][0]
-#     if (type == 'A'):
-#         AntiDumping(DOCarray[index], productArray[index])
-#     elif (type == 'C'):
-#         Countervailing(DOCarray[index], productArray[index])
-#     else:
-#         print(DOCarray[index])
-
-    # df = pd.read_csv("example.csv", header=None)
-    # df.to_csv("example.csv", header=["Letter", "Number", "Symbol"], index=False)
 
 # --------unworked code------------------------------------------------------
 # csvFile = open('Revocation.csv', 'w+')
