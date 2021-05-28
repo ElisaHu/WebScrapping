@@ -78,8 +78,6 @@ def AntiDumping(DOC, product):
             title = titlePattern.findall(longwebContent)[0]
             oldformat = oldPattern.findall(longwebContent)
             print(title)
-            if len(oldformat) > 0:
-                continue
             if product not in title:
                 continue;
             if 'Pursuant to Court Decision' in title or 'Notice of Correction' in title:
@@ -91,6 +89,9 @@ def AntiDumping(DOC, product):
                     continue
                 print('END ' + title)
                 print(link)
+                if len(oldformat) > 0:
+                    print('File is too old')
+                    continue
                 revocation.append(link)
                 revocation_source = link
                 revocation_action = 'revocation'
@@ -146,7 +147,7 @@ def AntiDumping(DOC, product):
                             if i > 2:
                                 revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i - 1]] * len(countries)
                     if len(revocation_HScodeList) < 5 or len(revocation_HScodeList) > 6:
-                        print('irregular HScode')
+
                         for i in range(0, len(revocation_HScodeList)):
                             revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i]] * len(countries)
                     HSREVLIST = len(revocation_HScodeList)
@@ -162,6 +163,9 @@ def AntiDumping(DOC, product):
             if 'Initiation of Antidumping Duty' in title or 'Initiation of Less-Than-Fair-Value' in title:
                 print('INITIATION: ' + title)
                 print(link)
+                if len(oldformat) > 0:
+                    print('File is too old')
+                    continue
                 initiation.append(link)
                 initiation_source = link
                 initiation_action = 'initiation'
@@ -173,13 +177,13 @@ def AntiDumping(DOC, product):
                 FedRegFormat = re.compile(r'document-citation.+(\d{2}\s[A-Z]{2}\s\d{4,5})\\n', flags=re.M)
                 initiation_FedReg = FedRegFormat.findall(longwebContent)[0]
                 initiation_petitioners = []
-                petitionerFormat1 = re.compile(r'proper\sform\s(?:by)?(?:on behalf of)?(.+)\s\((?:collectively,?\s)?(?:“)?(?:\w{3}\s)?(?:“)?\wetitioner(?:\w)?(?:")?\)', flags=re.M)
+                petitionerFormat1 = re.compile(r'proper\sform\s(?:by)?(?:on behalf of)?(.+)\((?:collectively,?\s)?(?:“)?(?:\w{3}\s)?(?:“)?\wetitioner(?:\w)?(?:")?\)', flags=re.M)
                 if len(petitionerFormat1.findall(longwebContent)) != 0:
                     if ',' in petitionerFormat1.findall(longwebContent)[0]:
                         initiation_petitioners = petitionerFormat1.findall(longwebContent)[0].split(",")
                     else:
                         initiation_petitioners = petitionerFormat1.findall(longwebContent)[0].split("and")
-                petitionerFormat2 = re.compile(r'proper\sform\s(?:by)?(?:on behalf of)?\s(.+?)\s\((?:collectively,?\s)?(?:&ldquo;)?(?:\w{3}\s)?(?:&ldquo;)?\wetitioner(?:\w)?&rdquo;\)',
+                petitionerFormat2 = re.compile(r'proper\sform\s(?:by)?(?:on behalf of)?\s(.+?)\((?:collectively,?\s)?(?:&ldquo;)?(?:\w{3}\s)?(?:&ldquo;)?\wetitioner(?:\w)?&rdquo;\)',
                                                flags=re.M)
                 if len(petitionerFormat2.findall(longwebContent)) != 0:
                     if ',' in petitionerFormat2.findall(longwebContent)[0]:
@@ -231,7 +235,7 @@ def AntiDumping(DOC, product):
                             if i > 2:
                                 initiation_df['HS' + str(i + 1)] = [initiation_HScodeList[i - 1]]* len(countries)
                     if len(initiation_HScodeList) < 5 or len(initiation_HScodeList) > 6:
-                        print('irregular HScode')
+
                         for i in range(0, len(initiation_HScodeList)):
                             initiation_df['HS' + str(i + 1)] = [initiation_HScodeList[i]]* len(countries)
                     HSINILIST = len(initiation_HScodeList)
@@ -247,6 +251,9 @@ def AntiDumping(DOC, product):
                     continue
                 print('START ' + title)
                 print(link)
+                if len(oldformat) > 0:
+                    print('File is too old')
+                    continue
                 activation.append(link)
                 activation_source = link
                 activation_action = 'activation'
@@ -379,7 +386,7 @@ def AntiDumping(DOC, product):
                             if i > 2:
                                 activation_df['HS' + str(i + 1)] = [activation_HScodeList[i - 1]]* len_of_act
                     if len(activation_HScodeList) < 5 or len(activation_HScodeList) > 6:
-                        print('irregular HScode')
+
                         for i in range(0, len(activation_HScodeList)):
                             activation_df['HS' + str(i + 1)] = [activation_HScodeList[i]]* len_of_act
                     HSACTLIST = len(activation_HScodeList)
@@ -397,14 +404,16 @@ def AntiDumping(DOC, product):
                 combine_ini_rev_list.append("HS" + str(eachHS + 1))
             combine_ini_rev_list = revocation_df.merge(initiation_df, on=list(combine_ini_rev_list), how='outer')
             combine_ini_rev_list['??? no activation'] = [''] * len(combine_ini_rev_list)
-            combine_ini_rev_list.to_csv(product + '_AD.csv', index=False)
+            combine_ini_rev_list.to_csv(product + DOC + '_AD.csv', index=False)
             return
         if not initiation_df.empty:
             initiation_df['??? no activation'] = [''] * len(initiation_df)
-            initiation_df.to_csv(product + '_AD.csv', index=False)
+            initiation_df.to_csv(product + DOC + '_AD.csv', index=False)
             return
+        if not revocation_df.empty:
+            revocation_df.to_csv(product + DOC + '_AD.csv', index=False)
         else:
-            print('there is no activation and initiation!!!!!!')
+            print('Nothing is Here!!!!!!')
             print('---------------------------------------------')
             return
     if len(initiation) != 0:
@@ -441,10 +450,8 @@ def AntiDumping(DOC, product):
         cols.pop(cols.index('Source'))
         combine_act_rev = combine_act_rev[cols + ['Source']]
         combine_act_rev['no init'] = ['no init']* len(combine_act_rev)
-        combine_act_rev.to_csv(product + '_AD.csv', index=False)
+        combine_act_rev.to_csv(product + DOC + '_AD.csv', index=False)
         return
-    # if HSINILIST == 0:
-    #     HSINILIST = HSACTLIST
 
     combine_column = ["Country", "FedReg", "Year", "Month", "Date", "AD/CVD", "Action", "Exporter", "Producer","DOC", "Source"]
     for i in Petitioner_column:
@@ -502,8 +509,6 @@ def Countervailing(DOC, product):
             title = titlePattern.findall(longwebContent)[0]
             oldformat = oldPattern.findall(longwebContent)
             print(title)
-            if len(oldformat) > 0:
-                continue
             if product not in title:
                 continue;
             if 'Pursuant to Court Decision' in title or 'Five-Year' in title:
@@ -515,6 +520,9 @@ def Countervailing(DOC, product):
                     continue
                 print('END ' + title)
                 print(link)
+                if len(oldformat) > 0:
+                    print('File is too old')
+                    continue
                 revocation.append(link)
                 revocation_source = link
                 revocation_action = 'revocation'
@@ -570,7 +578,7 @@ def Countervailing(DOC, product):
                             if i > 2:
                                 revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i - 1]] * len(countries)
                     if len(revocation_HScodeList) < 5 or len(revocation_HScodeList) > 6:
-                        print('irregular HScode')
+
                         for i in range(0, len(revocation_HScodeList)):
                             revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i]] * len(countries)
                     HSREVLIST = len(revocation_HScodeList)
@@ -586,6 +594,9 @@ def Countervailing(DOC, product):
                     continue
                 print('INITIATION: ' + title)
                 print(link)
+                if len(oldformat) > 0:
+                    print('File is too old')
+                    continue
                 initiation.append(link)
                 initiation_source = link
                 initiation_action = 'initiation'
@@ -597,13 +608,13 @@ def Countervailing(DOC, product):
                 FedRegFormat = re.compile(r'document-citation.+(\d{2}\s[A-Z]{2}\s\d{4,5})\\n', flags=re.M)
                 initiation_FedReg = FedRegFormat.findall(longwebContent)[0]
                 initiation_petitioners = []
-                petitionerFormat1 = re.compile(r'proper\sform\s(?:by)?(?:on behalf of)?(.+)\s\((?:collectively,?\s)?(?:“)?(?:\w{3}\s)?(?:“)?\wetitioner(?:\w)?(?:")?\)', flags=re.M)
+                petitionerFormat1 = re.compile(r'proper\sform\s(?:by)?(?:on behalf of)?(.+)\((?:collectively,?\s)?(?:“)?(?:\w{3}\s)?(?:“)?\wetitioner(?:\w)?(?:")?\)', flags=re.M)
                 if len(petitionerFormat1.findall(longwebContent)) != 0:
                     if ',' in petitionerFormat1.findall(longwebContent)[0]:
                         initiation_petitioners = petitionerFormat1.findall(longwebContent)[0].split(",")
                     else:
                         initiation_petitioners = petitionerFormat1.findall(longwebContent)[0].split("and")
-                petitionerFormat2 = re.compile(r'proper\sform\s(?:by)?(?:on behalf of)?\s(.+?)\s\((?:collectively,?\s)?(?:&ldquo;)?(?:\w{3}\s)?(?:&ldquo;)?\wetitioner(?:\w)?&rdquo;\)',
+                petitionerFormat2 = re.compile(r'proper\sform\s(?:by)?(?:on behalf of)?\s(.+?)\((?:collectively,?\s)?(?:&ldquo;)?(?:\w{3}\s)?(?:&ldquo;)?\wetitioner(?:\w)?&rdquo;\)',
                                                flags=re.M)
                 if len(petitionerFormat2.findall(longwebContent)) != 0:
                     if ',' in petitionerFormat2.findall(longwebContent)[0]:
@@ -655,7 +666,7 @@ def Countervailing(DOC, product):
                             if i > 2:
                                 initiation_df['HS' + str(i + 1)] = [initiation_HScodeList[i - 1]]* len(countries)
                     if len(initiation_HScodeList) < 5 or len(initiation_HScodeList) > 6:
-                        print('irregular HScode')
+
                         for i in range(0, len(initiation_HScodeList)):
                             initiation_df['HS' + str(i + 1)] = [initiation_HScodeList[i]]* len(countries)
                     HSINILIST = len(initiation_HScodeList)
@@ -669,6 +680,9 @@ def Countervailing(DOC, product):
                     continue
                 print('START ' + title)
                 print(link)
+                if len(oldformat) > 0:
+                    print('File is too old')
+                    continue
                 activation.append(link)
                 activation_source = link
                 activation_action = 'activation'
@@ -801,7 +815,7 @@ def Countervailing(DOC, product):
                             if i > 2:
                                 activation_df['HS' + str(i + 1)] = [activation_HScodeList[i - 1]]* len_of_act
                     if len(activation_HScodeList) < 5 or len(activation_HScodeList) > 6:
-                        print('irregular HScode')
+
                         for i in range(0, len(activation_HScodeList)):
                             activation_df['HS' + str(i + 1)] = [activation_HScodeList[i]]* len_of_act
                     HSACTLIST = len(activation_HScodeList)
@@ -819,14 +833,16 @@ def Countervailing(DOC, product):
                 combine_ini_rev_list.append("HS" + str(eachHS + 1))
             combine_ini_rev_list = revocation_df.merge(initiation_df, on=list(combine_ini_rev_list), how='outer')
             combine_ini_rev_list['??? no activation'] = [''] * len(combine_ini_rev_list)
-            combine_ini_rev_list.to_csv(product + '_AD.csv', index=False)
+            combine_ini_rev_list.to_csv(product + DOC + 'CVD.csv', index=False)
             return
         if not initiation_df.empty:
             initiation_df['??? no activation'] = [''] * len(initiation_df)
-            initiation_df.to_csv(product + '_AD.csv', index=False)
+            initiation_df.to_csv(product + DOC + '_CVD.csv', index=False)
             return
+        if not revocation_df.empty:
+            revocation_df.to_csv(product + DOC + '_CVD.csv', index=False)
         else:
-            print('there is no activation and initiation!!!!!!')
+            print('Nothing is Here!!!!!!')
             print('---------------------------------------------')
             return
     if len(initiation) != 0:
@@ -863,11 +879,10 @@ def Countervailing(DOC, product):
         cols.pop(cols.index('Source'))
         combine_act_rev = combine_act_rev[cols + ['Source']]
         combine_act_rev['no init'] = ['no init']* len(combine_act_rev)
-        combine_act_rev.to_csv(product + '_CVD.csv', index=False)
+        combine_act_rev.to_csv(product + DOC + '_CVD.csv', index=False)
         return
 
-    combine_column = ["Country", "FedReg", "Year", "Month", "Date", "AD/CVD", "Action", "Exporter", "Producer","DOC",
-                      "Source"]
+    combine_column = ["Country", "FedReg", "Year", "Month", "Date", "AD/CVD", "Action", "Exporter", "Producer","DOC", "Source"]
     for i in Petitioner_column:
         combine_column.append(i)
     for eachHS in range(min(HSINILIST, HSACTLIST, HSREVLIST)):
@@ -877,7 +892,7 @@ def Countervailing(DOC, product):
     cols = list(combine_int_rest.columns.values)
     cols.pop(cols.index('Source'))
     combine_int_rest = combine_int_rest[cols + ['Source']]
-    combine_int_rest.to_csv(product + '_CVD.csv', index=False)
+    combine_int_rest.to_csv(product + DOC + '_CVD.csv', index=False)
 
 
 # iterating over each DOC Number
