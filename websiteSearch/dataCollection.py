@@ -1,20 +1,21 @@
-import csv
-import math
-
 import pandas as pd
 import urllib.request, urllib.parse
 import re
 import requests
-import numpy as np
-import lxml
 
 # get numpy array from csv file
+emptytxt = open("emptyfile.txt", "a")
+tooOldfile = open('tooOldfile', 'a')
+noinittxt = open("noinitiation.txt", "a")
+noacttxt = open("noactivation.txt", "a")
+norevocatiotxt = open("norevocation.txt", "a")
+throwerrortxt = open("throwerror.txt", "a")
 my_csv = pd.read_csv('revocationOverall.csv')
 column = my_csv['DOC case No.']
 DOCarray = column[0:].values
 productColumn = my_csv['Product']
 productArray = productColumn[0:].values
-all_countries = ['PRC','Afghanistan', 'Aland Islands', 'Albania', 'Algeria', 'American Samoa', 'Andorra', 'Angola', 'Anguilla', 'Antarctica', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Aruba', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bermuda', 'Bhutan', 'Bolivia, Plurinational State of', 'Bonaire, Sint Eustatius and Saba', 'Bosnia and Herzegovina', 'Botswana', 'Bouvet Island', 'Brazil', 'British Indian Ocean Territory', 'Brunei Darussalam', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Cape Verde', 'Cayman Islands', 'Central African Republic', 'Chad', 'Chile', 'China', 'Christmas Island', 'Cocos (Keeling) Islands', 'Colombia', 'Comoros', 'Congo', 'Congo, The Democratic Republic of the', 'Cook Islands', 'Costa Rica', "Côte d'Ivoire", 'Croatia', 'Cuba', 'Curaçao', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Ethiopia', 'Falkland Islands (Malvinas)', 'Faroe Islands', 'Fiji', 'Finland', 'France', 'French Guiana', 'French Polynesia', 'French Southern Territories', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Gibraltar', 'Greece', 'Greenland', 'Grenada', 'Guadeloupe', 'Guam', 'Guatemala', 'Guernsey', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Heard Island and McDonald Islands', 'Holy See (Vatican City State)', 'Honduras', 'Hong Kong', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran, Islamic Republic of', 'Iraq', 'Ireland', 'Isle of Man', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jersey', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', "Korea", 'Korea, Republic of', 'Kuwait', 'Kyrgyzstan', "Lao People's Democratic Republic", 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macao', 'Macedonia, Republic of', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Martinique', 'Mauritania', 'Mauritius', 'Mayotte', 'Mexico', 'Micronesia, Federated States of', 'Moldova, Republic of', 'Monaco', 'Mongolia', 'Montenegro', 'Montserrat', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Caledonia', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Niue', 'Norfolk Island', 'Northern Mariana Islands', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Palestinian Territory, Occupied', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Pitcairn', 'Poland', 'Portugal', 'Puerto Rico', 'Qatar', 'Réunion', 'Romania', 'Russian Federation', 'Rwanda', 'Saint Barthélemy', 'Saint Helena, Ascension and Tristan da Cunha', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Martin (French part)', 'Saint Pierre and Miquelon', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Sint Maarten (Dutch part)', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Georgia and the South Sandwich Islands', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'South Sudan', 'Svalbard and Jan Mayen', 'Swaziland', 'Sweden', 'Switzerland', 'Syrian Arab Republic', 'Taiwan', 'Tajikistan', 'Tanzania, United Republic of', 'Thailand', 'Timor-Leste', 'Togo', 'Tokelau', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Turks and Caicos Islands', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'United States Minor Outlying Islands', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Venezuela', 'Viet Nam', 'Virgin Islands, British', 'Virgin Islands, U.S.', 'Wallis and Futuna', 'Yemen', 'Zambia', 'Zimbabwe']
+all_countries = ['PRC','Afghanistan', 'Aland IslaTaiwannds', 'Albania', 'Algeria', 'American Samoa', 'Andorra', 'Angola', 'Anguilla', 'Antarctica', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Aruba', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bermuda', 'Bhutan', 'Bolivia, Plurinational State of', 'Bonaire, Sint Eustatius and Saba', 'Bosnia and Herzegovina', 'Botswana', 'Bouvet Island', 'Brazil', 'British Indian Ocean Territory', 'Brunei Darussalam', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Cape Verde', 'Cayman Islands', 'Central African Republic', 'Chad', 'Chile', 'China', 'Christmas Island', 'Cocos (Keeling) Islands', 'Colombia', 'Comoros', 'Congo', 'Congo, The Democratic Republic of the', 'Cook Islands', 'Costa Rica', "Côte d'Ivoire", 'Croatia', 'Cuba', 'Curaçao', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Ethiopia', 'Falkland Islands (Malvinas)', 'Faroe Islands', 'Fiji', 'Finland', 'France', 'French Guiana', 'French Polynesia', 'French Southern Territories', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Gibraltar', 'Greece', 'Greenland', 'Grenada', 'Guadeloupe', 'Guam', 'Guatemala', 'Guernsey', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Heard Island and McDonald Islands', 'Holy See (Vatican City State)', 'Honduras', 'Hong Kong', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Isle of Man', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jersey', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', "Korea", 'Korea, Republic of', 'Kuwait', 'Kyrgyzstan', "Lao People's Democratic Republic", 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macao', 'Macedonia', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Martinique', 'Mauritania', 'Mauritius', 'Mayotte', 'Mexico', 'Micronesia, Federated States of', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Montserrat', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Caledonia', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Niue', 'Norfolk Island', 'Northern Mariana Islands', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Palestinian Territory, Occupied', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Pitcairn', 'Poland', 'Portugal', 'Puerto Rico', 'Qatar', 'Réunion', 'Romania', 'Russian Federation', 'Rwanda', 'Saint Barthélemy', 'Saint Helena, Ascension and Tristan da Cunha', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Martin (French part)', 'Saint Pierre and Miquelon', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Sint Maarten (Dutch part)', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Georgia and the South Sandwich Islands', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'South Sudan', 'Svalbard and Jan Mayen', 'Swaziland', 'Sweden', 'Switzerland', 'Syrian Arab Republic', 'Taiwan', 'Tajikistan', 'Tanzania, United Republic of', 'Thailand', 'Timor-Leste', 'Togo', 'Tokelau', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Turks and Caicos Islands', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom','UK', 'United States', 'United States Minor Outlying Islands', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Venezuela', 'Vietnam', 'Virgin Islands, British', 'Virgin Islands, U.S.', 'Wallis and Futuna', 'Yemen', 'Zambia', 'Zimbabwe']
 
 def tryfloat(x):
     try:
@@ -36,7 +37,6 @@ def iscountry(x):
         return True
 
 def AntiDumping(DOC, product):
-    # get the website link, read content from it
     initiation_df = pd.DataFrame()
     activation_df = pd.DataFrame()
     revocation_df = pd.DataFrame()
@@ -56,11 +56,8 @@ def AntiDumping(DOC, product):
             break;
         print(pageNum)
         webContent += thisPageWebContent
-    # print(webContent)
     webLinkFormat = re.compile(r'"(https://www.federalregister.gov/documents/\d+.+?)"', flags=re.M)
     webLinkList = webLinkFormat.findall(webContent)
-    # print(webLinkList)
-    # print(len(webLinkList))
     initiation = []
     activation = []
     revocation = []
@@ -77,21 +74,19 @@ def AntiDumping(DOC, product):
                 flags=re.M)
             title = titlePattern.findall(longwebContent)[0]
             oldformat = oldPattern.findall(longwebContent)
-            print(title)
+            if len(oldformat) > 0:
+                print('File is too old')
+                tooOldfile.write(product + ' ' + DOC + '' + link + '\n')
+                continue
+            if 'Pursuant to Court Decision' in title or 'Notice of Correction' in title or 'Antidumping or Countervailing Duty Order, Finding, or Suspended Investigation; Opportunity to Request Administrative Review' in title:
+                continue
             if product not in title:
-                continue;
-            if 'Pursuant to Court Decision' in title or 'Notice of Correction' in title:
                 continue
             if 'Revocation of Antidumping' in title or 'Revocation of the Antidumping' in title or 'Revocation of Orders' in title:
                 if 'Consideration of Revocation' in title:
                     continue
-                if 'Countervailing Duty Orders' not in title:
-                    continue
                 print('END ' + title)
                 print(link)
-                if len(oldformat) > 0:
-                    print('File is too old')
-                    continue
                 revocation.append(link)
                 revocation_source = link
                 revocation_action = 'revocation'
@@ -153,19 +148,13 @@ def AntiDumping(DOC, product):
                     HSREVLIST = len(revocation_HScodeList)
 
                 revocation_df['Source'] = [revocation_source] * len(countries)
+                continue
 
-            if 'Preliminary' in title or 'New Shipper Review' in title:
-                continue;
-            if 'Corrected Notice' in title or 'Changed Circumstances Review' in title:
-                continue;
-            if 'Final Result' in title:
-                continue;
+            if 'Preliminary' in title or 'New Shipper Review' in title or 'Corrected Notice' in title or 'Changed Circumstances Review' in title or 'Final Result' in title or 'Amendment to' in title:
+                continue
             if 'Initiation of Antidumping Duty' in title or 'Initiation of Less-Than-Fair-Value' in title:
                 print('INITIATION: ' + title)
                 print(link)
-                if len(oldformat) > 0:
-                    print('File is too old')
-                    continue
                 initiation.append(link)
                 initiation_source = link
                 initiation_action = 'initiation'
@@ -241,19 +230,14 @@ def AntiDumping(DOC, product):
                     HSINILIST = len(initiation_HScodeList)
                 initiation_df['DOC'] = [DOC] * len(countries)
                 initiation_df['Source'] = [initiation_source] * len(countries)
+                continue
+
+            if 'Correction for' in title or 'Notice of Amended' in title or 'Notice of Rescission' in title or 'Continuation' in title or 'Pursuant to Court' in title or 'Revocation' in title or 'Initiation' in title:
+                continue
 
             if 'Antidumping Duty Order' in title:
-                if 'Correction for' in title or 'Notice of Amended' in title or 'Notice of Rescission' in title:
-                    continue
-                if 'Continuation' in title or 'Pursuant to Court' in title:
-                    continue
-                if 'Revocation' in title or 'Initiation' in title:
-                    continue
                 print('START ' + title)
                 print(link)
-                if len(oldformat) > 0:
-                    print('File is too old')
-                    continue
                 activation.append(link)
                 activation_source = link
                 activation_action = 'activation'
@@ -298,7 +282,6 @@ def AntiDumping(DOC, product):
 
                     activation_df = activation_df.append(df_list[-2], ignore_index=True)
 
-                # fill first column value
                 last = ''
                 firstcolumn = []
                 firstcolumnname = activation_df.columns.tolist()[0]
@@ -392,31 +375,29 @@ def AntiDumping(DOC, product):
                     HSACTLIST = len(activation_HScodeList)
                 activation_df['Source'] = [activation_source] * len_of_act
 
-
-    # special for initiation: petitioners
-    # special for activation: "Dumping margin","Cash deposit (%)", "Exporter"
     if activation_df.empty:
-        print('take a look! we do not have activation in this product?')
         if not initiation_df.empty and not revocation_df.empty:
             combine_ini_rev_list = ["FedReg", "Country", "Year",
                                     "Month", "Date", "AD/CVD", "Action", "DOC", "Source"]
             for eachHS in range(min(HSREVLIST, HSINILIST)):
                 combine_ini_rev_list.append("HS" + str(eachHS + 1))
             combine_ini_rev_list = revocation_df.merge(initiation_df, on=list(combine_ini_rev_list), how='outer')
-            combine_ini_rev_list['??? no activation'] = [''] * len(combine_ini_rev_list)
+            combine_ini_rev_list['no activation'] = [''] * len(combine_ini_rev_list)
             combine_ini_rev_list.to_csv(product + DOC + '_AD.csv', index=False)
-            return
         if not initiation_df.empty:
-            initiation_df['??? no activation'] = [''] * len(initiation_df)
+            initiation_df['no activation'] = [''] * len(initiation_df)
+            revocation_df['no revocation'] = [''] * len(initiation_df)
             initiation_df.to_csv(product + DOC + '_AD.csv', index=False)
-            return
         if not revocation_df.empty:
+            revocation_df['no initiation'] = [''] * len(revocation_df)
+            revocation_df['no activation'] = [''] * len(revocation_df)
             revocation_df.to_csv(product + DOC + '_AD.csv', index=False)
         else:
-            print('Nothing is Here!!!!!!')
+            emptytxt.write(product + ' ' + DOC + '\n')
+            print('Empty!!!!!!')
             print('---------------------------------------------')
-            return
-    if len(initiation) != 0:
+        return
+    if not initiation_df.empty:
         Petitioner_column = [col for col in initiation_df.columns if 'Petitioner' in col or 'Ptner' in col]
         Petitioner_column.append("Country")
         initiation_df_subset = initiation_df[Petitioner_column]
@@ -424,13 +405,13 @@ def AntiDumping(DOC, product):
             activation_df = activation_df.merge(initiation_df_subset, on=["Country"])
         if not revocation_df.empty:
             revocation_df = revocation_df.merge(initiation_df_subset, on=["Country"])
-    if len(activation) != 0:
-        # activation_df_subset = activation_df[["Country", "Dumping margin", "Cash deposit (%)", "Exporter"]]
-        activation_df_subset = activation_df[["Country", "Exporter", "Producer"]]
-        if not initiation_df.empty:
-            initiation_df = activation_df_subset.merge(initiation_df, on=["Country"])
-        if not revocation_df.empty:
-            revocation_df = activation_df_subset.merge(revocation_df, on=["Country"])
+
+    activation_df_subset = activation_df[["Country", "Exporter", "Producer"]]
+    if not initiation_df.empty:
+        initiation_df = activation_df_subset.merge(initiation_df, on=["Country"])
+    if not revocation_df.empty:
+        revocation_df = activation_df_subset.merge(revocation_df, on=["Country"])
+
 
     if len(revocation) != 0:
         combine_act_rev_list = ["FedReg", "Country", "Exporter", "Producer", "Year",
@@ -463,7 +444,7 @@ def AntiDumping(DOC, product):
     cols = list(combine_int_rest.columns.values)
     cols.pop(cols.index('Source'))
     combine_int_rest = combine_int_rest[cols + ['Source']]
-    combine_int_rest.to_csv(product + DOC + '_AD.csv', index=False)
+    combine_int_rest.to_csv(product + ' ' + DOC + '_AD.csv', index=False)
 
 
 def Countervailing(DOC, product):
@@ -487,11 +468,8 @@ def Countervailing(DOC, product):
             break;
         print(pageNum)
         webContent += thisPageWebContent
-    # print(webContent)
     webLinkFormat = re.compile(r'"(https://www.federalregister.gov/documents/\d+.+?)"', flags=re.M)
     webLinkList = webLinkFormat.findall(webContent)
-    # print(webLinkList)
-    # print(len(webLinkList))
     initiation = []
     activation = []
     revocation = []
@@ -508,21 +486,20 @@ def Countervailing(DOC, product):
                 flags=re.M)
             title = titlePattern.findall(longwebContent)[0]
             oldformat = oldPattern.findall(longwebContent)
+            if len(oldformat) > 0:
+                tooOldfile.write(product + ' ' + DOC + '' + link + '\n')
+                print('File is too old')
+                continue
             print(title)
             if product not in title:
                 continue;
             if 'Pursuant to Court Decision' in title or 'Five-Year' in title:
                 continue
             if ('Revocation of' in title and 'Countervailing' in title) or 'Revocation of Orders' in title:
-                if 'Consideration of Revocation' in title:
-                    continue
-                if 'Countervailing Duty Orders' not in title:
+                if 'Consideration of Revocation' in title or ('Countervailing Duty Orders' not in title):
                     continue
                 print('END ' + title)
                 print(link)
-                if len(oldformat) > 0:
-                    print('File is too old')
-                    continue
                 revocation.append(link)
                 revocation_source = link
                 revocation_action = 'revocation'
@@ -584,19 +561,15 @@ def Countervailing(DOC, product):
                     HSREVLIST = len(revocation_HScodeList)
 
                 revocation_df['Source'] = [revocation_source] * len(countries)
+                continue
 
-            if 'Preliminary' in title or 'Expedited Review' in title:
-                continue;
-            if 'Corrected Notice' in title or 'Changed Circumstances Review' in title:
-                continue;
+            if 'Preliminary' in title or 'Expedited Review' in title or 'Corrected Notice' in title or 'Changed Circumstances Review' in title:
+                continue
             if 'Initiation of Countervailing Duty' in title or ('Initiation of' in title and 'Countervailing' in title):
                 if 'Correction to' in title or 'Anti-Circumvention Inquiries' in title or 'Amendment' in title or 'New Shipper Review' in title:
                     continue
                 print('INITIATION: ' + title)
                 print(link)
-                if len(oldformat) > 0:
-                    print('File is too old')
-                    continue
                 initiation.append(link)
                 initiation_source = link
                 initiation_action = 'initiation'
@@ -656,7 +629,6 @@ def Countervailing(DOC, product):
                     if len(initiation_HScodeList) == 5:
                         for i in range(0, len(initiation_HScodeList)):
                             initiation_df['HS' + str(i + 1)] = [initiation_HScodeList[i]]* len(countries)
-                    # todo: probably fix the order
                     if len(initiation_HScodeList) == 6:
                         for i in range(0, len(initiation_HScodeList) + 1):
                             if i < 2:
@@ -672,17 +644,15 @@ def Countervailing(DOC, product):
                     HSINILIST = len(initiation_HScodeList)
                 initiation_df['DOC'] = [DOC] * len(countries)
                 initiation_df['Source'] = [initiation_source] * len(countries)
+                continue
 
             if 'Affirmative Final Determination' in title or 'Sunset Review' in title:
                 continue
-            if 'Countervailing Duty Order' in title and 'Continuation' not in title and 'Pursuant to Court' not in title:
-                if 'Correction for' in title or 'Initiation' in title or 'Revocation' in title or 'Amendment to' in title or 'Changed Circumstance' in title:
+            if 'Countervailing Duty Order' in title:
+                if 'Correction for' in title or 'Amendment to' in title or 'Changed Circumstance' in title or 'Continuation' in title or 'Pursuant to Court' in title:
                     continue
                 print('START ' + title)
                 print(link)
-                if len(oldformat) > 0:
-                    print('File is too old')
-                    continue
                 activation.append(link)
                 activation_source = link
                 activation_action = 'activation'
@@ -699,7 +669,6 @@ def Countervailing(DOC, product):
                 df_list = pd.read_html(html)
                 activation_df = pd.DataFrame(df_list[-1])
                 if len(activation_df.columns.tolist()) == len(df_list[-2].columns.tolist()) and activation_df.columns[-1] == df_list[-2].columns[-1]:
-                    # add country
                     countryFormat = re.compile(r'<p class="title">.+?From(.+?)</p>', flags=re.M)
                     activation_countryFormat = countryFormat.findall(longwebContent)
                     if len(activation_countryFormat) > 0:
@@ -904,39 +873,19 @@ for index in range(0, len(DOCarray)):
 
     print(DOCarray[index])
     if (type == 'A'):
-        AntiDumping(DOCarray[index], product)
+        try:
+            AntiDumping(DOCarray[index], product)
+        except (ValueError, TypeError):
+            throwerrortxt.write(DOCarray[index] + ' ' + product + ValueError + TypeError + '\n')
+
     elif (type == 'C'):
-        Countervailing(DOCarray[index], product)
+        try:
+            Countervailing(DOCarray[index], product)
+        except (ValueError, TypeError):
+            throwerrortxt.write(DOCarray[index] + ' ' + product + ValueError + TypeError + '\n')
     else:
         print(DOCarray[index])
 
-    # df = pd.read_csv("example.csv", header=None)
-    # df.to_csv("example.csv", header=["Letter", "Number", "Symbol"], index=False)
+emptytxt.close()
 
-# AntiDumping('A-580-855', 'Diamond Sawblades')  # have all 3 phase, 2 table in action
-# AntiDumping('A-201-842', 'Large Residential Washers')  # first example
-# AntiDumping('A-580-850', 'Polyvinyl Alcohol')
-# AntiDumping('A-570-979', 'Crystalline Silicon Photovoltaic Cells')
-# AntiDumping('A-201-828', 'Welded Large Diameter Line Pipes') # cannot do this, missing DOC number
-# AntiDumping('A-437-804', 'Sulfanilic Acid') # irregular format of the table, revocation with FA
-# AntiDumping('A-307-820', 'Silicomanganese')
-# AntiDumping('A-570-890', 'Wooden Bedroom Furniture')
-
-# Countervailing('C-580-869', 'Large Residential Washers')
-# Countervailing('C-570-025', 'Polyethylene Terephthalate Resin')
-# Countervailing('C-122-858', 'Softwood Lumber Products')
-# Countervailing('C-570-030', 'Cold-Rolled Steel Flat Products')
-# Countervailing('C-533-872', 'Finished Carbon Steel Flanges')
-# Countervailing('C-570-966', 'Drill Pipe')
-# Countervailing('C-570-948', 'Steel Grating')
-# Countervailing('C-570-953', 'Narrow Woven Ribbons With Woven Selvedge')
-# Countervailing('C-489-825', 'Heavy Walled Rectangular Welded Carbon Steel Pipes and Tubes')
-
-# --------unworked code------------------------------------------------------
-# csvFile = open('Revocation.csv', 'w+')
-# content = []
-# with open('Revocation.csv', 'rt') as revocation:
-#     csv_reader = csv.reader(revocation, delimiter=' ')
-#     for row in csv_reader:
-#         content.append(list(row[4]))
 
