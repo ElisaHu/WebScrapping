@@ -11,12 +11,12 @@ noacttxt = open("noactivation.txt", "a")
 norevocatiotxt = open("norevocation.txt", "a")
 throwerrortxt = open("throwerror.txt", "a")
 # my_csv = pd.read_csv('revocationOverall.csv')
-my_csv = pd.read_csv('CaseList - No Error.csv')
+my_csv = pd.read_csv('CaseList - ORIGINAL.csv')
 column = my_csv['DOC case No.']
-DOCarray = column[0:].values
+DOCarray = column[643:].values
 productColumn = my_csv['Product']
-productArray = productColumn[0:].values
-all_countries = ['PRC','Afghanistan', 'Aland IslaTaiwannds', 'Albania', 'Algeria', 'American Samoa', 'Andorra', 'Angola', 'Anguilla', 'Antarctica', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Aruba', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bermuda', 'Bhutan', 'Bolivia, Plurinational State of', 'Bonaire, Sint Eustatius and Saba', 'Bosnia and Herzegovina', 'Botswana', 'Bouvet Island', 'Brazil', 'British Indian Ocean Territory', 'Brunei Darussalam', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Cape Verde', 'Cayman Islands', 'Central African Republic', 'Chad', 'Chile', 'China', 'Christmas Island', 'Cocos (Keeling) Islands', 'Colombia', 'Comoros', 'Congo', 'Congo, The Democratic Republic of the', 'Cook Islands', 'Costa Rica', "Côte d'Ivoire", 'Croatia', 'Cuba', 'Curaçao', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Ethiopia', 'Falkland Islands (Malvinas)', 'Faroe Islands', 'Fiji', 'Finland', 'France', 'French Guiana', 'French Polynesia', 'French Southern Territories', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Gibraltar', 'Greece', 'Greenland', 'Grenada', 'Guadeloupe', 'Guam', 'Guatemala', 'Guernsey', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Heard Island and McDonald Islands', 'Holy See (Vatican City State)', 'Honduras', 'Hong Kong', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Isle of Man', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jersey', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', "Korea", 'Korea, Republic of', 'Kuwait', 'Kyrgyzstan', "Lao People's Democratic Republic", 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macao', 'Macedonia', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Martinique', 'Mauritania', 'Mauritius', 'Mayotte', 'Mexico', 'Micronesia, Federated States of', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Montserrat', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Caledonia', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Niue', 'Norfolk Island', 'Northern Mariana Islands', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Palestinian Territory, Occupied', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Pitcairn', 'Poland', 'Portugal', 'Puerto Rico', 'Qatar', 'Réunion', 'Romania', 'Russia', 'Rwanda', 'Saint Barthélemy', 'Saint Helena, Ascension and Tristan da Cunha', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Martin (French part)', 'Saint Pierre and Miquelon', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Sint Maarten (Dutch part)', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Georgia and the South Sandwich Islands', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'South Sudan', 'Svalbard and Jan Mayen', 'Swaziland', 'Sweden', 'Switzerland', 'Syrian Arab Republic', 'Taiwan', 'Tajikistan', 'Tanzania, United Republic of', 'Thailand', 'Timor-Leste', 'Togo', 'Tokelau', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Turks and Caicos Islands', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom','UK', 'United States', 'United States Minor Outlying Islands', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Venezuela', 'Vietnam', 'Virgin Islands, British', 'Virgin Islands, U.S.', 'Wallis and Futuna', 'Yemen', 'Zambia', 'Zimbabwe']
+productArray = productColumn[643:].values
+all_countries = ['Afghanistan', 'Aland IslaTaiwannds', 'Albania', 'Algeria', 'American Samoa', 'Andorra', 'Angola', 'Anguilla', 'Antarctica', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Aruba', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bermuda', 'Bhutan', 'Bolivia, Plurinational State of', 'Bonaire, Sint Eustatius and Saba', 'Bosnia and Herzegovina', 'Botswana', 'Bouvet Island', 'Brazil', 'British Indian Ocean Territory', 'Brunei Darussalam', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Cape Verde', 'Cayman Islands', 'Central African Republic', 'Chad', 'Chile', 'China',  'Christmas Island', 'Cocos (Keeling) Islands', 'Colombia', 'Comoros', 'Congo', 'Congo, The Democratic Republic of the', 'Cook Islands', 'Costa Rica', "Côte d'Ivoire", 'Croatia', 'Cuba', 'Curaçao', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Ethiopia', 'Falkland Islands (Malvinas)', 'Faroe Islands', 'Fiji', 'Finland', 'France', 'French Guiana', 'French Polynesia', 'French Southern Territories', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Gibraltar', 'Greece', 'Greenland', 'Grenada', 'Guadeloupe', 'Guam', 'Guatemala', 'Guernsey', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Heard Island and McDonald Islands', 'Holy See (Vatican City State)', 'Honduras', 'Hong Kong', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Isle of Man', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jersey', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', "Korea", 'Korea, Republic of', 'Kuwait', 'Kyrgyzstan', "Lao People's Democratic Republic", 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macao', 'Macedonia', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Martinique', 'Mauritania', 'Mauritius', 'Mayotte', 'Mexico', 'Micronesia, Federated States of', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Montserrat', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Caledonia', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Niue', 'Norfolk Island', 'Northern Mariana Islands', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Palestinian Territory, Occupied', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Pitcairn', 'Poland', 'Portugal', 'PRC', 'Puerto Rico', 'Qatar', 'Réunion', 'Romania', 'Russia', 'Rwanda', 'Saint Barthélemy', 'Saint Helena, Ascension and Tristan da Cunha', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Martin (French part)', 'Saint Pierre and Miquelon', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Sint Maarten (Dutch part)', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Georgia and the South Sandwich Islands', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'South Sudan', 'Svalbard and Jan Mayen', 'Swaziland', 'Sweden', 'Switzerland', 'Syrian Arab Republic', 'Taiwan', 'Tajikistan', 'Tanzania, United Republic of', 'Thailand', 'Timor-Leste', 'Togo', 'Tokelau', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Turks and Caicos Islands', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom','UK', 'United States', 'United States Minor Outlying Islands', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Venezuela', 'Vietnam', 'Virgin Islands, British', 'Virgin Islands, U.S.', 'Wallis and Futuna', 'Yemen', 'Zambia', 'Zimbabwe']
 
 def tryfloat(x):
     try:
@@ -26,7 +26,7 @@ def tryfloat(x):
         return False
 
 def startprint(x):
-    if 'Start Print' in x:
+    if 'Start Print' in x or 'Start Printed' in x:
         return False
     else:
         return True
@@ -266,34 +266,80 @@ def AntiDumping(DOC, product):
                 html = requests.get(link).content
                 df_list = pd.read_html(html)
                 activation_df = pd.DataFrame(df_list[-1])
+                counttables = 1
                 if len(activation_df.columns.tolist()) == len(df_list[-2].columns.tolist()) and activation_df.columns[-1] == df_list[-2].columns[-1]:
+                    counttables = 2
+                    if len(df_list[-3].columns.tolist()) == len(df_list[-2].columns.tolist()) and df_list[-3].columns[-1] == df_list[-2].columns[-1]:
+                        counttables = 3
+                    if len(df_list[-4].columns.tolist()) == len(df_list[-2].columns.tolist()) and df_list[-4].columns[-1] == df_list[-2].columns[-1]:
+                        counttables = 4
+                    if len(df_list[-5].columns.tolist()) == len(df_list[-2].columns.tolist()) and df_list[-5].columns[-1] == df_list[-2].columns[-1]:
+                        counttables = 5
+                    if len(df_list[-6].columns.tolist()) == len(df_list[-2].columns.tolist()) and df_list[-6].columns[-1] == df_list[-2].columns[-1]:
+                        counttables = 6
                     # add country
-                    countryFormat = re.compile(r'<p class="title">.+?From(.+?)</p>', flags=re.M)
-                    activation_countryFormat = countryFormat.findall(longwebContent)
-                    if len(activation_countryFormat) > 0:
-                        for i in range(len(activation_countryFormat)):
-                            if 'PRC' in activation_countryFormat[i]:
-                                activation_countryFormat[i] = 'China'
-                            activation_countryFormat[i] = activation_countryFormat[i].replace(" ", "")
-                    else:
-                        columnnamelist = []
-                        columnnamelist.append(df_list[-2].columns.tolist()[0])
-                        columnnamelist.append(df_list[-1].columns.tolist()[0])
+                    # countryFormat = re.compile(r'<p class="title">.+?From(.+?)</p>', flags=re.M)
+                    # activation_countryFormat = countryFormat.findall(longwebContent)
+                    countryFormatInTitle = re.compile(r'From(.+)', flags=re.M)
+                    activation_countryFormat_in_title = countryFormatInTitle.findall(title)
+                    columnnamelist = []
+                    # if len(activation_countryFormat) > 0:
+                    #     for i in range(len(activation_countryFormat)):
+                    #         if 'PRC' in activation_countryFormat[i]:
+                    #             activation_countryFormat[i] = 'China'
+                    #         activation_countryFormat[i] = activation_countryFormat[i].replace(" ", "")
+                    if len(activation_countryFormat_in_title) > 0:
                         for c in all_countries:
-                            if c in df_list[-2].columns.tolist()[0]:
-                                if c == 'PRC':
-                                    c = 'China'
-                                activation_countryFormat.append(c)
-                        for c in all_countries:
-                            if c in df_list[-1].columns.tolist()[0]:
-                                if c == 'PRC':
-                                    c = 'China'
-                                activation_countryFormat.append(c)
+                            if c in activation_countryFormat_in_title[0]:
+                                columnnamelist.append(c)
+                    # else:
+                    #     if counttables == 3:
+                    #         columnnamelist.append(df_list[-3].columns.tolist()[0])
+                    #     columnnamelist.append(df_list[-2].columns.tolist()[0])
+                    #     columnnamelist.append(df_list[-1].columns.tolist()[0])
+                    #
+                    #     if counttables == 3:
+                    #         for c in all_countries:
+                    #             if c in df_list[-2].columns.tolist()[0]:
+                    #                 if c == 'PRC':
+                    #                     c = 'China'
+                    #                 activation_countryFormat.append(c)
+                    #
+                    #     for c in all_countries:
+                    #         if c in df_list[-2].columns.tolist()[0]:
+                    #             if c == 'PRC':
+                    #                 c = 'China'
+                    #             activation_countryFormat.append(c)
+                    #     for c in all_countries:
+                    #         if c in df_list[-1].columns.tolist()[0]:
+                    #             if c == 'PRC':
+                    #                 c = 'China'
+                    #             activation_countryFormat.append(c)
+                    for eachtable in range(counttables):
+                        if eachtable == 1:
+                            activation_df['Country'] = [columnnamelist[counttables - 1]] * len(activation_df)
+                        if eachtable > 1:
+                            df_list[-eachtable]['Country'] = [columnnamelist[eachtable]] * len(df_list[-eachtable])
+                    # if counttables ==4:
+                    #     df_list[-4]['Country'] = [columnnamelist[0]] * len(df_list[-4])
+                    #     df_list[-3]['Country'] = [columnnamelist[1]] * len(df_list[-3])
+                    #     df_list[-2]['Country'] = [columnnamelist[2]] * len(df_list[-2])
+                    #     activation_df['Country'] = [columnnamelist[3]] * len(activation_df)
+                    # if counttables ==3:
+                    #     df_list[-3]['Country'] = [columnnamelist[0]] * len(df_list[-3])
+                    #     df_list[-2]['Country'] = [columnnamelist[1]] * len(df_list[-2])
+                    #     activation_df['Country'] = [columnnamelist[2]] * len(activation_df)
+                    # else:
+                    #     df_list[-2]['Country'] = [columnnamelist[0]] * len(df_list[-2])
+                    #     activation_df['Country'] = [columnnamelist[1]] * len(activation_df)
+                    for eachtable in range(counttables - 1):
+                        activation_df = activation_df.append(df_list[-(eachtable + 2)], ignore_index=True)
 
-                    df_list[-2]['Country'] = [activation_countryFormat[0]] * len(df_list[-2])
-                    activation_df['Country'] = [activation_countryFormat[1]] * len(activation_df)
-
-                    activation_df = activation_df.append(df_list[-2], ignore_index=True)
+                    # activation_df = activation_df.append(df_list[-2], ignore_index=True)
+                    # if counttables == 3:
+                    #     activation_df = activation_df.append(df_list[-3], ignore_index=True)
+                    # if counttables == 4:
+                    #     activation_df = activation_df.append(df_list[-4], ignore_index=True)
 
                 last = ''
                 firstcolumn = []
@@ -307,6 +353,11 @@ def AntiDumping(DOC, product):
                 if firstcolumnname == 'Country' or firstcolumnname == 'Countries':
                     secondcolumnname = activation_df.columns.tolist()[1]
                     activation_df = activation_df.rename({secondcolumnname: 'Exporter'}, axis=1)
+                elif 'Exporter/producer' in activation_df.columns:
+                    activation_df = activation_df.rename({'Exporter/producer': 'Exporter'}, axis=1)
+                    temp_column = activation_df.pop('Exporter')
+                    activation_df.insert(0, 'Exporter', temp_column)
+                    firstcolumnname = 'Exporter'
                 elif 'Exporter' in activation_df.columns:
                     temp_column = activation_df.pop('Exporter')
                     activation_df.insert(0, 'Exporter', temp_column)
@@ -315,6 +366,8 @@ def AntiDumping(DOC, product):
                     firstcolumnname = 'Exporter'
                     if activation_df[firstcolumnname][0] in all_countries:
                         countriesInTable = True
+
+                activation_df = activation_df[activation_df['Exporter'].apply(lambda x: startprint(x))]
 
                 len_of_act = len(activation_df)
                 if countriesInTable:
@@ -590,7 +643,7 @@ def Countervailing(DOC, product):
             if 'Preliminary' in title or 'Expedited Review' in title or 'Corrected Notice' in title or 'Changed Circumstances Review' in title or 'Extension of Time Limits' in title:
                 continue
             if 'Initiation of Countervailing Duty' in title or ('Initiation of' in title and 'Countervailing' in title):
-                if 'Correction to' in title or 'Anti-Circumvention' in title or 'Amendment' in title or 'New Shipper Review' in title:
+                if 'Correction to' in title or 'Anti-Circumvention' in title or 'Amendment' in title or 'New Shipper Review' in title or 'Intent To Revoke Orders in Part' in title:
                     continue
                 print('INITIATION: ' + title)
                 print(link)
@@ -703,11 +756,17 @@ def Countervailing(DOC, product):
                 if len(activation_df.columns.tolist()) == len(df_list[-2].columns.tolist()) and activation_df.columns[-1] == df_list[-2].columns[-1]:
                     countryFormat = re.compile(r'<p class="title">.+?From(.+?)</p>', flags=re.M)
                     activation_countryFormat = countryFormat.findall(longwebContent)
+                    countryFormatInTitle = re.compile(r'From(.+)', flags=re.M)
+                    activation_countryFormat_in_title = countryFormatInTitle.findall(title)
                     if len(activation_countryFormat) > 0:
                         for i in range(len(activation_countryFormat)):
                             if 'PRC' in activation_countryFormat[i]:
                                 activation_countryFormat[i] = 'China'
                             activation_countryFormat[i] = activation_countryFormat[i].replace(" ", "")
+                    elif len(activation_countryFormat_in_title) > 0:
+                        for c in all_countries:
+                            if c in activation_countryFormat_in_title[0]:
+                                activation_countryFormat.append(c)
                     else:
                         columnnamelist = []
                         columnnamelist.append(df_list[-2].columns.tolist()[0])
@@ -735,6 +794,7 @@ def Countervailing(DOC, product):
                 lastcolumnname = activation_df.columns.tolist()[-1]
                 activation_df[lastcolumnname] = activation_df[lastcolumnname].astype(str, errors='ignore')
                 activation_df = activation_df[activation_df[lastcolumnname].apply(lambda x: startprint(x))]
+                activation_df = activation_df[activation_df[firstcolumnname].apply(lambda x: startprint(x))]
                 activation_df = activation_df.reset_index(drop=True)
                 countriesInTable = False
 
