@@ -1,21 +1,22 @@
 import pandas as pd
 import urllib.request, urllib.parse
+from urllib.request import Request, urlopen
 import re
 import requests
 
 # get numpy array from csv file
 emptytxt = open("emptyfile.txt", "a")
 tooOldfile = open('tooOldfile.txt', 'a')
-noinittxt = open("noinitiation.txt", "a")
-noacttxt = open("noactivation.txt", "a")
-norevocatiotxt = open("norevocation.txt", "a")
-throwerrortxt = open("throwerror.txt", "a")
+# noinittxt = open("noinitiation.txt", "a")
+# noacttxt = open("noactivation.txt", "a")
+# norevocatiotxt = open("norevocation.txt", "a")
+# throwerrortxt = open("throwerror.txt", "a")
 # my_csv = pd.read_csv('revocationOverall.csv')
-my_csv = pd.read_csv('CaseList - ORIGINAL.csv')
+my_csv = pd.read_csv('CaseList - No Error.csv')
 column = my_csv['DOC case No.']
-DOCarray = column[643:].values
+DOCarray = column[0:].values
 productColumn = my_csv['Product']
-productArray = productColumn[643:].values
+productArray = productColumn[0:].values
 all_countries = ['Afghanistan', 'Aland IslaTaiwannds', 'Albania', 'Algeria', 'American Samoa', 'Andorra', 'Angola', 'Anguilla', 'Antarctica', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Aruba', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bermuda', 'Bhutan', 'Bolivia, Plurinational State of', 'Bonaire, Sint Eustatius and Saba', 'Bosnia and Herzegovina', 'Botswana', 'Bouvet Island', 'Brazil', 'British Indian Ocean Territory', 'Brunei Darussalam', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Cape Verde', 'Cayman Islands', 'Central African Republic', 'Chad', 'Chile', 'China',  'Christmas Island', 'Cocos (Keeling) Islands', 'Colombia', 'Comoros', 'Congo', 'Congo, The Democratic Republic of the', 'Cook Islands', 'Costa Rica', "Côte d'Ivoire", 'Croatia', 'Cuba', 'Curaçao', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Ethiopia', 'Falkland Islands (Malvinas)', 'Faroe Islands', 'Fiji', 'Finland', 'France', 'French Guiana', 'French Polynesia', 'French Southern Territories', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Gibraltar', 'Greece', 'Greenland', 'Grenada', 'Guadeloupe', 'Guam', 'Guatemala', 'Guernsey', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Heard Island and McDonald Islands', 'Holy See (Vatican City State)', 'Honduras', 'Hong Kong', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Isle of Man', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jersey', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', "Korea", 'Korea, Republic of', 'Kuwait', 'Kyrgyzstan', "Lao People's Democratic Republic", 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macao', 'Macedonia', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Martinique', 'Mauritania', 'Mauritius', 'Mayotte', 'Mexico', 'Micronesia, Federated States of', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Montserrat', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Caledonia', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Niue', 'Norfolk Island', 'Northern Mariana Islands', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Palestinian Territory, Occupied', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Pitcairn', 'Poland', 'Portugal', 'PRC', 'Puerto Rico', 'Qatar', 'Réunion', 'Romania', 'Russia', 'Rwanda', 'Saint Barthélemy', 'Saint Helena, Ascension and Tristan da Cunha', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Martin (French part)', 'Saint Pierre and Miquelon', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Sint Maarten (Dutch part)', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Georgia and the South Sandwich Islands', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'South Sudan', 'Svalbard and Jan Mayen', 'Swaziland', 'Sweden', 'Switzerland', 'Syrian Arab Republic', 'Taiwan', 'Tajikistan', 'Tanzania, United Republic of', 'Thailand', 'Timor-Leste', 'Togo', 'Tokelau', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Turks and Caicos Islands', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom','UK', 'United States', 'United States Minor Outlying Islands', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Venezuela', 'Vietnam', 'Virgin Islands, British', 'Virgin Islands, U.S.', 'Wallis and Futuna', 'Yemen', 'Zambia', 'Zimbabwe']
 
 def tryfloat(x):
@@ -45,8 +46,10 @@ def AntiDumping(DOC, product):
     HSREVLIST = 0
     HSINILIST = 0
     url = 'https://www.federalregister.gov/documents/search?conditions%5Bterm%5D=' + DOC
-    response = urllib.request.urlopen(url)
-    webContent = str(response.read())
+    req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    # webpage = urlopen(req).read()
+    # response = urllib.request.urlopen(url)
+    webContent = str(urlopen(req).read())
     for pageNum in range(2, 20):
         nextPage = url + '&page=' + str(pageNum)
         response = urllib.request.urlopen(nextPage)
@@ -144,7 +147,6 @@ def AntiDumping(DOC, product):
                             if i > 2:
                                 revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i - 1]] * len(countries)
                     if len(revocation_HScodeList) < 5 or len(revocation_HScodeList) > 6:
-
                         for i in range(0, len(revocation_HScodeList)):
                             revocation_df['HS' + str(i + 1)] = [revocation_HScodeList[i]] * len(countries)
                     HSREVLIST = len(revocation_HScodeList)
@@ -199,7 +201,7 @@ def AntiDumping(DOC, product):
                 initiation_df['FedReg'] = [initiation_FedReg] * len(countries)
                 initiation_df['AD/CVD'] = ['AD'] * len(countries)
                 if len(initiation_petitioners) == 0:
-                    initiation_df['???Petitioner'] = ['']*len(countries)
+                    initiation_df['no petitioner'] = ['1']*len(countries)
                 else:
                     for i in range(len(initiation_petitioners)):
                         initiation_df['Petitioner' + str(i + 1)] = [initiation_petitioners[i]] * len(countries)
@@ -277,9 +279,6 @@ def AntiDumping(DOC, product):
                         counttables = 5
                     if len(df_list[-6].columns.tolist()) == len(df_list[-2].columns.tolist()) and df_list[-6].columns[-1] == df_list[-2].columns[-1]:
                         counttables = 6
-                    # add country
-                    # countryFormat = re.compile(r'<p class="title">.+?From(.+?)</p>', flags=re.M)
-                    # activation_countryFormat = countryFormat.findall(longwebContent)
                     countryFormatInTitle = re.compile(r'From(.+)', flags=re.M)
                     activation_countryFormat_in_title = countryFormatInTitle.findall(title)
                     columnnamelist = []
@@ -451,19 +450,19 @@ def AntiDumping(DOC, product):
             for eachHS in range(min(HSREVLIST, HSINILIST)):
                 combine_ini_rev_list.append("HS" + str(eachHS + 1))
             combine_ini_rev_list = revocation_df.merge(initiation_df, on=list(combine_ini_rev_list), how='outer')
-            combine_ini_rev_list['no activation'] = [''] * len(combine_ini_rev_list)
+            combine_ini_rev_list['no activation'] = ['1'] * len(combine_ini_rev_list)
             combine_ini_rev_list.to_csv(product + DOC + '_AD.csv', index=False)
             print('only int + rev ----------- AD')
             return
         elif not initiation_df.empty:
             print('only initiation file')
-            initiation_df['no activation'] = [''] * len(initiation_df)
-            initiation_df['no revocation'] = [''] * len(initiation_df)
+            initiation_df['no activation'] = ['1'] * len(initiation_df)
+            initiation_df['no revocation'] = ['1'] * len(initiation_df)
             initiation_df.to_csv(product + DOC + '_AD.csv', index=False)
         elif not revocation_df.empty:
             print('only revocation file --------------- AD')
-            revocation_df['no initiation'] = [''] * len(revocation_df)
-            revocation_df['no activation'] = [''] * len(revocation_df)
+            revocation_df['no initiation'] = ['1'] * len(revocation_df)
+            revocation_df['no activation'] = ['1'] * len(revocation_df)
             revocation_df.to_csv(product + DOC + '_AD.csv', index=False)
         else:
             emptytxt.write(product + ' ' + DOC + '\n')
@@ -505,7 +504,7 @@ def AntiDumping(DOC, product):
         cols = list(combine_act_rev.columns.values)
         cols.pop(cols.index('Source'))
         combine_act_rev = combine_act_rev[cols + ['Source']]
-        combine_act_rev['no init'] = ['no init']* len(combine_act_rev)
+        combine_act_rev['no initiation'] = ['1']* len(combine_act_rev)
         combine_act_rev.to_csv(product + DOC + '_AD.csv', index=False)
         return
 
@@ -520,7 +519,6 @@ def AntiDumping(DOC, product):
     cols.pop(cols.index('Source'))
     combine_int_rest = combine_int_rest[cols + ['Source']]
     combine_int_rest.to_csv(product + ' ' + DOC + '_AD.csv', index=False)
-
 
 def Countervailing(DOC, product):
     # get the website link, read content from it
@@ -687,7 +685,7 @@ def Countervailing(DOC, product):
                 initiation_df['FedReg'] = [initiation_FedReg] * len(countries)
                 initiation_df['AD/CVD'] = ['CVD'] * len(countries)
                 if len(initiation_petitioners) == 0:
-                    initiation_df['???Petitioner'] = ['']*len(countries)
+                    initiation_df['no petitioner'] = ['1']*len(countries)
                 else:
                     for i in range(len(initiation_petitioners)):
                         initiation_df['Petitioner' + str(i + 1)] = [initiation_petitioners[i]] * len(countries)
@@ -753,41 +751,33 @@ def Countervailing(DOC, product):
                 html = requests.get(link).content
                 df_list = pd.read_html(html)
                 activation_df = pd.DataFrame(df_list[-1])
+                counttables = 1
                 if len(activation_df.columns.tolist()) == len(df_list[-2].columns.tolist()) and activation_df.columns[-1] == df_list[-2].columns[-1]:
-                    countryFormat = re.compile(r'<p class="title">.+?From(.+?)</p>', flags=re.M)
-                    activation_countryFormat = countryFormat.findall(longwebContent)
+                    counttables = 2
+                    if len(df_list[-3].columns.tolist()) == len(df_list[-2].columns.tolist()) and df_list[-3].columns[-1] == df_list[-2].columns[-1]:
+                        counttables = 3
+                    if len(df_list[-4].columns.tolist()) == len(df_list[-2].columns.tolist()) and df_list[-4].columns[-1] == df_list[-2].columns[-1]:
+                        counttables = 4
+                    if len(df_list[-5].columns.tolist()) == len(df_list[-2].columns.tolist()) and df_list[-5].columns[-1] == df_list[-2].columns[-1]:
+                        counttables = 5
+                    if len(df_list[-6].columns.tolist()) == len(df_list[-2].columns.tolist()) and df_list[-6].columns[-1] == df_list[-2].columns[-1]:
+                        counttables = 6
                     countryFormatInTitle = re.compile(r'From(.+)', flags=re.M)
                     activation_countryFormat_in_title = countryFormatInTitle.findall(title)
-                    if len(activation_countryFormat) > 0:
-                        for i in range(len(activation_countryFormat)):
-                            if 'PRC' in activation_countryFormat[i]:
-                                activation_countryFormat[i] = 'China'
-                            activation_countryFormat[i] = activation_countryFormat[i].replace(" ", "")
-                    elif len(activation_countryFormat_in_title) > 0:
+                    columnnamelist = []
+                    if len(activation_countryFormat_in_title) > 0:
                         for c in all_countries:
                             if c in activation_countryFormat_in_title[0]:
-                                activation_countryFormat.append(c)
-                    else:
-                        columnnamelist = []
-                        columnnamelist.append(df_list[-2].columns.tolist()[0])
-                        columnnamelist.append(df_list[-1].columns.tolist()[0])
-                        for c in all_countries:
-                            if c in df_list[-2].columns.tolist()[0]:
-                                if c == 'PRC':
-                                    c = 'China'
-                                activation_countryFormat.append(c)
-                        for c in all_countries:
-                            if c in df_list[-1].columns.tolist()[0]:
-                                if c == 'PRC':
-                                    c = 'China'
-                                activation_countryFormat.append(c)
+                                columnnamelist.append(c)
+                    for eachtable in range(counttables):
+                        if eachtable == 1:
+                            activation_df['Country'] = [columnnamelist[counttables - 1]] * len(activation_df)
+                        if eachtable > 1:
+                            df_list[-eachtable]['Country'] = [columnnamelist[eachtable]] * len(df_list[-eachtable])
+                    for eachtable in range(counttables - 1):
+                        activation_df = activation_df.append(df_list[-(eachtable + 2)], ignore_index=True)
 
-                    df_list[-2]['Country'] = [activation_countryFormat[0]] * len(df_list[-2])
-                    activation_df['Country'] = [activation_countryFormat[1]] * len(activation_df)
 
-                    activation_df = activation_df.append(df_list[-2], ignore_index=True)
-
-            # fill first column value
                 last = ''
                 firstcolumn = []
                 firstcolumnname = activation_df.columns.tolist()[0]
@@ -801,6 +791,14 @@ def Countervailing(DOC, product):
                 if firstcolumnname == 'Country' or firstcolumnname == 'Countries':
                     secondcolumnname = activation_df.columns.tolist()[1]
                     activation_df = activation_df.rename({secondcolumnname: 'Exporter'}, axis=1)
+                elif 'Exporter/producer' in activation_df.columns:
+                    activation_df = activation_df.rename({'Exporter/producer': 'Exporter'}, axis=1)
+                    temp_column = activation_df.pop('Exporter')
+                    activation_df.insert(0, 'Exporter', temp_column)
+                    firstcolumnname = 'Exporter'
+                elif 'Exporter' in activation_df.columns:
+                    temp_column = activation_df.pop('Exporter')
+                    activation_df.insert(0, 'Exporter', temp_column)
                 else:
                     activation_df = activation_df.rename({firstcolumnname: 'Exporter'}, axis=1)
                     firstcolumnname = 'Exporter'
@@ -892,11 +890,11 @@ def Countervailing(DOC, product):
             for eachHS in range(min(HSREVLIST, HSINILIST)):
                 combine_ini_rev_list.append("HS" + str(eachHS + 1))
             combine_ini_rev_list = revocation_df.merge(initiation_df, on=list(combine_ini_rev_list), how='outer')
-            combine_ini_rev_list['??? no activation'] = [''] * len(combine_ini_rev_list)
+            combine_ini_rev_list['no activation'] = ['1'] * len(combine_ini_rev_list)
             combine_ini_rev_list.to_csv(product + DOC + 'CVD.csv', index=False)
             print('only have int + rev ------------------- CVD')
         elif not initiation_df.empty:
-            initiation_df['??? no activation'] = [''] * len(initiation_df)
+            initiation_df['no activation'] = ['1'] * len(initiation_df)
             initiation_df.to_csv(product + DOC + '_CVD.csv', index=False)
             print('only initiation file ---------------- CVD')
         elif not revocation_df.empty:
@@ -915,7 +913,6 @@ def Countervailing(DOC, product):
             activation_df = activation_df.merge(initiation_df_subset, on=["Country"])
         if not revocation_df.empty:
             revocation_df = revocation_df.merge(initiation_df_subset, on=["Country"])
-    if len(activation) != 0:
         # activation_df_subset = activation_df[["Country", "Dumping margin", "Cash deposit (%)", "Exporter"]]
         activation_df_subset = activation_df[["Country", "Exporter", "Producer"]]
         if not initiation_df.empty:
@@ -942,7 +939,7 @@ def Countervailing(DOC, product):
         cols = list(combine_act_rev.columns.values)
         cols.pop(cols.index('Source'))
         combine_act_rev = combine_act_rev[cols + ['Source']]
-        combine_act_rev['no init'] = ['no init']* len(combine_act_rev)
+        combine_act_rev['no initiation'] = ['1']* len(combine_act_rev)
         combine_act_rev.to_csv(product + DOC + '_CVD.csv', index=False)
         return
 
@@ -956,7 +953,7 @@ def Countervailing(DOC, product):
     cols = list(combine_int_rest.columns.values)
     cols.pop(cols.index('Source'))
     combine_int_rest = combine_int_rest[cols + ['Source']]
-    combine_int_rest.to_csv(product + DOC + '_CVD.csv', index=False)
+    combine_int_rest.to_csv(product +' ' + DOC + '_CVD.csv', index=False)
 
 def changeProductName(product):
     product = product.replace('&', 'and')
@@ -1036,21 +1033,17 @@ def changeProductName(product):
         product = 'Cold-Drawn Mechanical Tubing of Carbon and Alloy Steel'
     if product == 'Polyethylene Terephthalate Sheet?':
         product = 'Polyethylene Terephthalate Sheet'
-    if product == '':
-        product = ''
-    if product == '':
-        product = ''
-    if product == '':
-        product = ''
-    if product == '':
-        product = ''
-    if product == '':
-        product = ''
-
-
+    # if product == '':
+    #     product = ''
+    # if product == '':
+    #     product = ''
+    # if product == '':
+    #     product = ''
+    # if product == '':
+    #     product = ''
+    # if product == '':
+    #     product = ''
     return product
-
-# iterating over each DOC Number
 
 for index in range(0, len(DOCarray)):
     # get the type: AD/CVD -- first char in a string
@@ -1061,22 +1054,15 @@ for index in range(0, len(DOCarray)):
     print(DOC)
     print(product)
     if (type == 'A'):
-        try:
-            AntiDumping(DOC, product)
-        except (ValueError, TypeError):
-            throwerrortxt.write(DOC + ' ' + product + ValueError + '\n')
+        AntiDumping(DOC, product)
 
     elif (type == 'C'):
-        try:
-            Countervailing(DOC, product)
-        except (ValueError, TypeError):
-            throwerrortxt.write(DOC + ' ' + product + ValueError + '\n')
+        Countervailing(DOC, product)
 
 tooOldfile.close()
 emptytxt.close()
-throwerrortxt.close()
-noinittxt.close()
-noacttxt.close()
-norevocatiotxt.close()
+# noinittxt.close()
+# noacttxt.close()
+# norevocatiotxt.close()
 
 
